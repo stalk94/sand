@@ -15,7 +15,6 @@
         "src/fonts": true,
         "src/images": true,
         "src/img": true,
-        "src/lib": true,
         "src\\component/icon.jsx": true,
         "src\\component/move.jsx": true,
         "src\\component/figure.jsx": true,

@@ -1,4 +1,4 @@
-export class EventEmmitter {
+export default class EventEmmitter {
     events = {}
     on(eventName, fn) {
         if(!this.events[eventName]) this.events[eventName] = [];

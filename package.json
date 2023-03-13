@@ -9,7 +9,7 @@
   "browser": "src/main.jsx",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "vite test --port=3001",
+    "test": "vite src --port=3001",
     "build": "vite build src --outDir=../dist --watch --sourcemap"
   },
   "dependencies": {
