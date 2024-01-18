@@ -29,6 +29,8 @@ export default {
 		this.globalStorage[key] = value;
 		this._save(key, value);
 		this._event.emit(key, value);
+
+		return this;
 	},
 	get(key) {
 		return this.globalStorage[key];
