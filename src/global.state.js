@@ -9,7 +9,7 @@ const globalState = hookstate({
         password: "",
         id: 0,
         theme: "dark",
-        avatar: "",
+        avatar: undefined,
         permision: 0,
         todo: {
             column: [{

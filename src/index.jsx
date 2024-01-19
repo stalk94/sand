@@ -11,7 +11,7 @@ import { MegaMenu } from 'primereact/megamenu';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
 import ContactData from "./component/contacts";
-import UserData from "./component/user/user-table"
+import User from "./component/user"
 import { useDidMount } from 'rooks';
 
 const modelBar = [
@@ -32,12 +32,12 @@ const App =()=> {
     const [view, setView] = React.useState();
     
     useDidMount(()=> {
-        setView(<ContactData useViev={setView}/>);
+        setView(<User/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
             else if(target==='Планировщик') setView();
-            else setView(<UserData useViev={setView}/>);
+            else setView();
         });
 
     });
@@ -51,11 +51,7 @@ const App =()=> {
             <Menubar 
                 model={navigation}
                 start={<img width={50} src={state.logo.get() ?? "https://www.primefaces.org/primereact/images/logo.png"}/>}
-                end={
-                    <>
-                        <Button icon="pi pi-user"/>
-                    </>
-                }
+                end={ <Button onClick={()=> setView(<User/>)} icon="pi pi-user"/>}
             />
             <div style={{display:"flex",flexDirection:"row"}}>
                 <MegaMenu  
