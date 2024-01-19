@@ -28,7 +28,8 @@ const globalState = hookstate({
             name: "test",
             timeshtamp: '24.07.2023',
             telephone: "+384940932343",
-            category: "",
+            category: "важные",
+            author: "admin",
             data: {}
         }
     ],

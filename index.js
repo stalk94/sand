@@ -21,6 +21,7 @@ app.post('/readContact', (req, res)=> {
     if(cont[req.body.id]){
         if(req.body.telephone) cont[req.body.id].telephone = req.body.telephone;
         else if(req.body.name) cont[req.body.id].name = req.body.name;
+        else if(req.body.category) cont[req.body.id].category = req.body.category;
         db.set("contacts", cont);
     }
     res.send(cont);

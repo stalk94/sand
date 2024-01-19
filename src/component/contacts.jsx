@@ -37,6 +37,16 @@ export default function ContactData({useViev}) {
                 accept: ()=> setServerData('readContact', {name:cache, id:detail.id})
             });
         }
+        else if(action==='readCat') {
+            let cache = detail.category;
+            confirmPopup({
+                rejectLabel: 'отмена',
+                acceptLabel: 'изменить',
+                target: ev.currentTarget,
+                message: <AutoComplete value={detail.category} onChange={(event)=> cache = event.value}/>,
+                accept: ()=> setServerData('readContact', {category:cache, id:detail.id})
+            });
+        }
         else setServerData('delContact',{id:detail});
     }
     const imageBodyTemplate =(data)=> {
@@ -86,6 +96,20 @@ export default function ContactData({useViev}) {
                                 />
                         </div>
                     }/>
+                    <Column 
+                        header="category"
+                         body={(rowData)=> 
+                            <div>
+                            { rowData.category }
+                                <Button 
+                                        style={{float:"right"}}
+                                        className="p-button-outlined p-button-secondary"
+                                        icon="pi pi-pencil" 
+                                        onClick={(ev)=> useAction("readCat", rowData, ev)}
+                                    />
+                            </div>
+                        }   
+                    />
                     <Column field="rating" header="telophone" body={(rowData)=> 
                         <div>
                            { rowData.telephone }
@@ -97,6 +121,7 @@ export default function ContactData({useViev}) {
                                 />
                         </div>
                     }/>
+                    <Column header="author" body={(rowData)=> <div>{ rowData.author }</div>}/>
                     <Column 
                         body={(rowData)=> (
                             <div style={{marginLeft:"35%"}}>
@@ -113,3 +138,21 @@ export default function ContactData({useViev}) {
         </div>
     );
 }
+
+
+/**
+ * <div 
+                                style={{cursor:"pointer"}}
+                                onClick={(ev)=> {
+                                    if(!ev.target.on || ev.target.on===0) {
+                                        ev.target.on = 1;
+                                        ev.target.style.color = "blue"
+                                    }
+                                    else {
+                                        ev.target.on = 0;
+                                        ev.target.style.color = "white"
+                                    }
+                            }}>
+                                category 
+                            </div>
+ */
