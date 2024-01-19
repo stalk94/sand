@@ -6,9 +6,8 @@ const globalState = hookstate({
     logo: undefined,
     user: {
 //        login: "test",
-        password: "",
+        token: "",
         id: 0,
-        theme: "dark",
         avatar: undefined,
         permision: 0,
         todo: {

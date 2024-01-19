@@ -24,6 +24,7 @@ const App =()=> {
     const state = useHookstate(globalState);
     const toast = React.useRef(null);
 
+    const useViev =()=> setView(<Base/>);
     const showToast =(type, title, text)=> {
         toast.current.show({
             severity: type, 
@@ -35,7 +36,7 @@ const App =()=> {
     useDidMount(()=> {
         EVENT.on("infoPanel", (detail)=> showToast(detail.type, detail.title, detail.text));
         if(state.user.get() && state.user.login.get()) setView(<Base/>);
-        else setView(<Auth/>);
+        else setView(<Auth onView={useViev}/>);
     });
 
 

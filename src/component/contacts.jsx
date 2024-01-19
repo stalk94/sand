@@ -6,6 +6,7 @@ import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
+import { useInfoToolbar, fetchApi } from "../engineHooks";
 
 
 
@@ -15,7 +16,10 @@ export default function ContactData({useViev}) {
 
     // важный хук, Отсылает данные на сервер и обновляет global state
     const setServerData =(path, data)=> {
-        send(path, data).then((val)=> state.set(val));
+        fetchApi(path, data, (val)=> {
+            if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
+            else state.set(val);
+        });
     }
     const useAction =(action, detail, ev)=> {
         if(action==='readTel') {

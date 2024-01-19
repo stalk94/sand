@@ -1,3 +1,5 @@
+import globalState from "./global.state";
+
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
  * @param children элементы которые мы хотим отобразить. Если ничего не передается в аргумент то панель не показываеться
@@ -31,5 +33,5 @@ export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, tex
  * @param callback 
  */
 export function fetchApi(url: string, data: any, callback: Function) {
-    send(url, data).then(callback);
+    if(url && globalState.user) send(url, {login: globalState.user.login.get(), token: globalState.user.token.get(), ...data}).then(callback);
 }
