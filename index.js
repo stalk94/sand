@@ -16,6 +16,15 @@ const server = http.createServer(app);
 app.get("/", (req, res)=> {
     res.sendFile(__dirname+'/dist/index.html');
 });
+app.post('/readContact', (req, res)=> {
+    const cont = db.get("contacts");
+    if(cont[req.body.id]){
+        if(req.body.telephone) cont[req.body.id].telephone = req.body.telephone;
+        else if(req.body.name) cont[req.body.id].name = req.body.name;
+        db.set("contacts", cont);
+    }
+    res.send(cont);
+});
 app.post('/addContact', (req, res)=> {
     const cont = db.get("contacts");
     if(cont[req.body]){

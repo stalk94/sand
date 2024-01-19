@@ -10,7 +10,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 
 
 export default function ContactData({useViev}) {
-    const [total, setTotal] = React.useState(0);
+    const [total, setTotal] = React.useState(globalState.contacts.length);
     const agents = useHookstate(globalState.contacts);
 
     const setServerData =(path, data)=> {
@@ -18,23 +18,23 @@ export default function ContactData({useViev}) {
     }
     const useAction =(action, detail, ev)=> {
         if(action==='readTel') {
+            let cache = detail.telephone;
             confirmPopup({
                 rejectLabel: 'отмена',
                 acceptLabel: 'изменить',
                 target: ev.currentTarget,
-                message: <AutoComplete value={detail.telephone} onChange={(event)=> console.log(event.value)}/>,
-                accept: ()=> setServerData(detail),
-                reject: ()=> console.log(detail)
+                message: <AutoComplete value={detail.telephone} onChange={(event)=> cache = event.value}/>,
+                accept: ()=> setServerData('readContact', {telephone:cache, id:detail.id})
             });
         }
         else if(action==='readName') {
+            let cache = detail.name;
             confirmPopup({
                 rejectLabel: 'отмена',
                 acceptLabel: 'изменить',
                 target: ev.currentTarget,
-                message: <AutoComplete value={detail.name} onChange={(event)=> console.log(event.value)}/>,
-                accept: ()=> setServerData(detail),
-                reject: ()=> console.log(detail)
+                message: <AutoComplete value={detail.name} onChange={(event)=> cache = event.value}/>,
+                accept: ()=> setServerData('readContact', {name:cache, id:detail.id})
             });
         }
         else setServerData('delContact',{id:detail});
