@@ -24,9 +24,10 @@ const globalState = hookstate({
     },
     contacts: [
         {
-            name: "",
-            timeshtamp: 0,
-            telephone: 0,
+            id: 0,
+            name: "test",
+            timeshtamp: '24.07.2023',
+            telephone: "+384940932343",
             category: "",
             data: {}
         }

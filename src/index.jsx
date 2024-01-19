@@ -10,7 +10,7 @@ import { useHookstate } from '@hookstate/core';
 import { MegaMenu } from 'primereact/megamenu';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
-import AgentData from "./component/agents";
+import ContactData from "./component/contacts";
 import UserData from "./component/user/user-table"
 import { useDidMount } from 'rooks';
 
@@ -32,10 +32,10 @@ const App =()=> {
     const [view, setView] = React.useState();
     
     useDidMount(()=> {
-        setView(<AgentData useViev={setView}/>);
+        setView(<ContactData useViev={setView}/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
-            if(target==='Контакты') setView(<AgentData useViev={setView}/>);
+            if(target==='Контакты') setView(<ContactData useViev={setView}/>);
             else if(target==='Планировщик') setView();
             else setView(<UserData useViev={setView}/>);
         });

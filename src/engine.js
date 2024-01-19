@@ -11,12 +11,11 @@ window.send = async function(url, data, metod) {
         method: metod ?? 'POST',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json;charset=utf-8'
+            'Content-Type': 'application/json'
         }
     }
-    if(metod==='POST') dataServer.body = JSON.stringify(data);
+    if(metod!=='GET') dataServer.body = JSON.stringify(data);
 
     const request = await fetch(window.gurl + url, dataServer);
     return request.json();
 }
-
