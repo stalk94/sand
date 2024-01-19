@@ -11,10 +11,11 @@ import { AutoComplete } from 'primereact/autocomplete';
 
 export default function ContactData({useViev}) {
     const [total, setTotal] = React.useState(globalState.contacts.length);
-    const agents = useHookstate(globalState.contacts);
+    const state = useHookstate(globalState.contacts);
 
+    // важный хук, Отсылает данные на сервер и обновляет global state
     const setServerData =(path, data)=> {
-        send(path, data).then((val)=> agents.set(val));
+        send(path, data).then((val)=> state.set(val));
     }
     const useAction =(action, detail, ev)=> {
         if(action==='readTel') {
@@ -78,7 +79,7 @@ export default function ContactData({useViev}) {
             <div className="card">
                 <ConfirmPopup />
                 <DataTable 
-                    value={agents.get()} 
+                    value={state.get()} 
                     header={heaader}
                     footer={footer}
                     responsiveLayout="scroll"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client'
 import "primereact/resources/themes/luna-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -7,30 +7,43 @@ import "primeicons/primeicons.css";
 import "./engine";
 import globalState from "./global.state";
 import { useHookstate } from '@hookstate/core';
-import { MegaMenu } from 'primereact/megamenu';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
 import ContactData from "./component/contacts";
-import User from "./component/user"
+import User from "./component/user";
+import ToolBar from "./component/toolbar";
+import { Toast } from 'primereact/toast';
 import { useDidMount } from 'rooks';
+import { useInfoToolbar } from "./engineHooks";
 
-const modelBar = [
-    {label: 'Статистика', icon: 'pi pi-chart-line', id:0},
-    {label: 'Пункт 2', icon: 'pi pi-calculator', id:1}
-];
+
 const navigation = [
     {label:'Контакты',icon:'pi pi-phone'},
     {label:'Лиды',icon:'pi pi-users'},
     {label:'Календарь',icon:'pi pi-fw pi-calendar'},
     {label:'Статистика',icon:'pi pi-chart-bar'},
     {label:'Планировщик',icon:'pi pi-book'}
-]
+];
+const icon = {
+    sucess: "✔️",
+    error: "🛑",
+    warn: "💡"
+}
 
 
 const App =()=> {
     const state = useHookstate(globalState);
     const [view, setView] = React.useState();
+    const toast = React.useRef(null);
     
+    const showToast =(type, title, text)=> {
+        toast.current.show({
+            severity: type, 
+            summary: <>{ icon[type] }{ title }</>, 
+            detail: text, 
+            life: 2000
+        });
+    }
     useDidMount(()=> {
         setView(<User/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
@@ -39,11 +52,8 @@ const App =()=> {
             else if(target==='Планировщик') setView();
             else setView();
         });
-
+        EVENT.on("infoPanel", (detail)=> showToast(detail.type, detail.title, detail.text));
     });
-    const serverCall =()=> {
-
-    }
 
     
     return(
@@ -54,13 +64,10 @@ const App =()=> {
                 end={ <Button onClick={()=> setView(<User/>)} icon="pi pi-user"/>}
             />
             <div style={{display:"flex",flexDirection:"row"}}>
-                <MegaMenu  
-                    orientation="vertical"
-                    model={modelBar}
-                    onClick={(ev)=> console.log(ev.target.outerText)}
-                />
+                <ToolBar/>
                 { view }
             </div>
+            <Toast position="bottom-left" ref={toast} />
             <div style={{textAlign:"center",backgroundColor:"black"}}>
                 © { globalState.cooper.get() } { new Date().getFullYear() }
             </div>

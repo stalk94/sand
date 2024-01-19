@@ -1,4 +1,4 @@
-require("./server/dom");
+//require("./server/dom");
 const http = require('http');
 const express = require('express');
 const cors = require("cors");
@@ -12,6 +12,7 @@ app.use(cors({origin:"http://localhost:3001"}));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 const server = http.createServer(app);
+
 
 
 app.get("/", (req, res)=> {
