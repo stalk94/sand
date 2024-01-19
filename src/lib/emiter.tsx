@@ -1,4 +1,13 @@
-export default class EventEmmitter {
+interface EventNodeJs {
+    events: object,
+    on(eventName: string, fn: Function): Function,
+    emit(eventName: string, data: any): void,
+    off(eventName: string, fn: Function): void
+}
+
+
+
+export default class EventEmmitter implements EventNodeJs {
     events = {}
     on(eventName, fn) {
         if(!this.events[eventName]) this.events[eventName] = [];

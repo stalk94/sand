@@ -1,6 +1,17 @@
 import EventEmmitter from "./emiter";
 
 
+interface RxStorage {
+	globalStorage: {},
+	_event: EventEmmitter,
+	init(globalStorage: object): RxStorage ,
+	set(key: string, value: any): RxStorage,
+	get(key: string): any,
+	watch(key: string, listener: Function): void,
+	unwatch(key: string): void
+}
+
+
 export const useLocalStorage =()=> {
     const result = {}
 
@@ -14,6 +25,7 @@ export const useLocalStorage =()=> {
 }
 
 
+
 export default {
     globalStorage: {},
 	_event: new EventEmmitter(),
@@ -21,24 +33,29 @@ export default {
 	async _save(key, value) {
 		localStorage.setItem(key, JSON.stringify(value))
 	},
-    init(globalStorage) {
+	/**
+	 * Инициалтзатор реактивного хранилища
+	 * @param globalStorage обьект хранилища
+	 * @returns this
+	 */
+    init(globalStorage: object): RxStorage  {
         this.globalStorage = globalStorage;
         return this;
     },
-	set(key, value) {
+	set(key: string, value: any): RxStorage  {
 		this.globalStorage[key] = value;
 		this._save(key, value);
 		this._event.emit(key, value);
 
 		return this;
 	},
-	get(key) {
+	get(key: string): any {
 		return this.globalStorage[key];
 	},
-	watch(key, listener) {
+	watch(key: string, listener: Function) {
 		this._event.on(key, listener);
 	},
-	unwatch(key) {
+	unwatch(key: string) {
 		delete this._event.events[key];
 	}
 }

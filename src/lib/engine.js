@@ -1,5 +1,5 @@
-import EventEmiter from "./lib/emiter";
-import store, { useLocalStorage } from "./lib/rxStorage";
+import EventEmiter from "./emiter";
+import store, { useLocalStorage } from "./rxStorage";
 
 
 window.gurl = 'http://localhost:3000/';

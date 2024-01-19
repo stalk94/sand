@@ -1,5 +1,3 @@
-
-
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
  * @param children элементы которые мы хотим отобразить. Если ничего не передается в аргумент то панель не показываеться
@@ -23,4 +21,15 @@ export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, tex
     }
 
     EVENT.emit("infoPanel", detail);
+}
+
+
+/**
+ * 
+ * @param url 
+ * @param data 
+ * @param callback 
+ */
+export function fetchApi(url: string, data: any, callback: Function) {
+    send(url, data).then(callback);
 }
