@@ -98,7 +98,7 @@ app.post('/readTodo', (req, res)=> {
     if(verifu.error) res.send(verifu);
     else {
         const user = db.get("users."+req.body.login);
-        if(req.body.cart){
+        if(req.body.todo){
             user.todo = req.body.todo
             db.set("users."+req.body.login, user);
         }

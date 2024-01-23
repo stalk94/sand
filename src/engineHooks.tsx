@@ -35,3 +35,4 @@ export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, tex
 export function fetchApi(url: string, data: any, callback: Function) {
     if(url && globalState.user) send(url, {login: globalState.user.login.get(), token: globalState.user.token.get(), ...data}).then(callback);
 }
+
