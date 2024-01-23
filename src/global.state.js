@@ -29,6 +29,17 @@ const globalState = hookstate({
             telephone: "+384940932343",
             category: "важные",
             author: "admin",
+            priorety: "star",
+            data: {}
+        },
+        {
+            id: 1,
+            name: "test",
+            timeshtamp: '24.07.2023',
+            telephone: "+384940932343",
+            category: "важн",
+            author: "admin",
+            priorety: "star",
             data: {}
         }
     ],

@@ -25,7 +25,7 @@ export default function BaseContainer() {
     const [view, setView] = React.useState();
     
     useDidMount(()=> {
-        setView(<User />);
+        setView(<ContactData />);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);

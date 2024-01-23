@@ -49,7 +49,6 @@ app.post('/readContact', (req, res)=> {
         res.send(cont);
     }
 });
-// !?
 app.post('/addContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
@@ -72,11 +71,53 @@ app.post('/delContact', (req, res)=> {
     
     if(verifu.error) res.send(verifu);
     else {
-        if(cont[req.body.id]){
-            cont.splice(req.body.id, 1);
-            db.set("contacts", cont);
-        }
+        cont.forEach((elem, index)=> {
+            if(elem.id===req.body.id) cont.splice(index, 1);
+        });
+        db.set("contacts", cont);
         res.send(cont);
+    }
+});
+app.post('/addTodo', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(req.body.cart){
+            req.body.cart.id = user.todo.column.length + 1;
+            user.todo.push(req.body.cart);
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
+    }
+});
+app.post('/readTodo', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(req.body.cart){
+            user.todo = req.body.todo
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
+    }
+});
+app.post('/delTodo', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(req.body.cart){
+            user.todo.column.forEach((elem, index)=> {
+                if(elem.id===req.body.cart.id) user.todo.column.splice(index, 1);
+            })
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
     }
 });
 

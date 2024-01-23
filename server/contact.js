@@ -19,3 +19,4 @@ exports.Agent = class {
         db.set("agent", data);
     }
 }
+

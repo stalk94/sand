@@ -1,12 +1,31 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
 import { useInfoToolbar, fetchApi } from "../engineHooks";
+import { Dropdown } from 'primereact/dropdown';
+import { FaExclamation, FaCrown, FaUser, FaStar } from "react-icons/fa";
+import { MdGroup } from "react-icons/md";
+import { IoReload } from "react-icons/io5";
+
+
+const priorety = {
+    exc: <FaExclamation color="red"/>,
+    crown: <FaCrown color="gold" />,
+    user: <FaUser />,
+    groop: <MdGroup color="green" />,
+    star: <FaStar color="#e5ee72" />
+}
+const dropDown = [
+    {label: <FaUser />, value: "user"},
+    {label: <MdGroup color="green" />, value: "groop"},
+    {label: <FaStar color="#e5ee72" />, value: "star"},
+    {label: <FaCrown color="gold" />, value: "crown"},
+    {label: <FaExclamation color="red"/>, value: "exc"}
+]
 
 
 const AddContact =({useCache})=> {
@@ -17,12 +36,13 @@ const AddContact =({useCache})=> {
             old[ev.target.name] = ev.target.value
             return old
         });
-        useCache(state)
+        useCache(state);
     }
 
 
     return(
         <div style={{display:"flex", flexDirection:"column"}}>
+            <Dropdown name="priorety" options={dropDown} onChange={setVal} placeholder='priority'/>
             <AutoComplete name="name" onChange={setVal} placeholder='name'/>
             <AutoComplete name="telephone" onChange={setVal} placeholder='telephone'/>
             <AutoComplete name="category" onChange={setVal} placeholder='category'/>
@@ -31,9 +51,10 @@ const AddContact =({useCache})=> {
 }
 
 
-export default function ContactData({useViev}) {
+
+export default function ContactData() {
     const [total, setTotal] = React.useState(globalState.contacts.length);
-    const state = useHookstate(globalState.contacts);
+    const [state, setState] = React.useState(globalState.contacts.get());
 
     // важный хук, Отсылает данные на сервер и обновляет global state
     const setServerData =(path, data)=> {
@@ -73,6 +94,16 @@ export default function ContactData({useViev}) {
                 accept: ()=> setServerData('readContact', {category:cache, id:detail.id})
             });
         }
+        else if(action==='readPriorety') {
+            let cache = detail.priorety;
+            confirmPopup({
+                rejectLabel: 'отмена',
+                acceptLabel: 'изменить',
+                target: ev.currentTarget,
+                message: <Dropdown value={detail.priorety} options={dropDown} onChange={(event)=> cache = event.value}/>,
+                accept: ()=> setServerData('readContact', {name:cache, id:detail.id})
+            });
+        }
         else setServerData('delContact',{id:detail});
     }
     const useAddcontact =(ev)=> {
@@ -85,21 +116,38 @@ export default function ContactData({useViev}) {
             accept: ()=> setServerData('addContact', cache)
         });
     }
-    const imageTemplate =(data)=> {
-        return (
-            <img 
-                src={data.avatar ?? `https://png.pngtree.com/png-vector/20220527/ourlarge/pngtree-unknown-person-icon-avatar-question-png-image_4760937.png`} 
-                onError={(e)=> e.target.src='https://siliconvalleygazette.com/wp-content/uploads/2021/12/what-is-the-404-not-found-error.png'} 
-                style={{width:"40px",height:"40px"}}
-            />
-        );
+    const filtre =(type, detail)=> {
+        if(type==="category"){
+            setState((state)=> {
+                let newState = state.filter((elem)=> elem.category===detail);
+                setTotal(newState.length);
+                return newState;
+            });
+        }
+        else if(type==="author"){
+            setState((state)=> {
+                let newState = state.filter((elem)=> elem.author===detail);
+                setTotal(newState.length);
+                return newState;
+            });
+        }
     }
 
     const heaader =(
-        <div className="table-header">
-            <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
-            <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
-            <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
+        <div style={{display:"flex"}}>
+            <div className="table-header">
+                <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
+                <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
+                <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
+            </div>
+            <div style={{marginLeft:"85%"}}>
+                <Button 
+                    style={{marginRight:"5px"}} 
+                    className="p-button-outlined p-button-secondary" 
+                    icon={<IoReload />}
+                    onClick={()=> {setState(globalState.contacts.get()); setTotal(globalState.contacts.length)}}
+                />
+            </div>
         </div>
     );
     const footer =(
@@ -114,13 +162,12 @@ export default function ContactData({useViev}) {
             <div className="card">
                 <ConfirmPopup />
                 <DataTable 
-                    value={state.get()} 
+                    rows={15}
+                    value={state} 
                     header={heaader}
                     footer={footer}
                     responsiveLayout="scroll"
                 >
-                    <Column body={imageTemplate}/>
-                    <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
                     <Column header="name" body={(rowData)=> 
                         <div>
                            { rowData.name }
@@ -134,17 +181,17 @@ export default function ContactData({useViev}) {
                     }/>
                     <Column 
                         header="category"
-                         body={(rowData)=> 
+                        body={(rowData)=> 
                             <div>
-                            { rowData.category }
+                                <var onClick={()=> filtre("category", rowData.category)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.category }</var>
                                 <Button 
                                         style={{float:"right"}}
                                         className="p-button-outlined p-button-secondary"
-                                        icon="pi pi-pencil" 
+                                        icon="pi pi-pencil"
                                         onClick={(ev)=> useAction("readCat", rowData, ev)}
                                     />
                             </div>
-                        }   
+                        } 
                     />
                     <Column field="rating" header="telophone" body={(rowData)=> 
                         <div>
@@ -157,7 +204,10 @@ export default function ContactData({useViev}) {
                                 />
                         </div>
                     }/>
-                    <Column header="author" body={(rowData)=> <div>{ rowData.author }</div>}/>
+                    <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
+                    <Column header="author" body={(rowData)=> 
+                        <var onClick={()=> filtre("author", rowData.author)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.author }</var>
+                    }/>
                     <Column 
                         body={(rowData)=> (
                             <div style={{marginLeft:"35%"}}>
