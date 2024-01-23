@@ -12,19 +12,19 @@ const modelBar = [
 export default function ToolBar() {
     const [state, setState] = React.useState();
 
-    
-    useDidMount(()=> {
-        EVENT.on("toolbar", (detail)=> {
-            if(detail) setState(
-                <MegaMenu  
-                    orientation="vertical"
-                    onClick={(ev)=> console.log(ev.target)}
-                    start={detail}
-                />
-            );
-            else setState("");
-        });
-    });
+    const hookView =(detail)=> {
+        if(detail) setState(
+            <MegaMenu  
+                orientation="vertical"
+                onClick={(ev)=> console.log(ev.target)}
+                start={detail}
+            />
+        );
+        else setState("");
+    }
+    useDidMount(()=> EVENT.on("toolbar", hookView));
+    useWillUnmount(()=> EVENT.off("toolbar", hookView));
 
+    
     return(<>{ state }</>);
 }

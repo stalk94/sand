@@ -2,6 +2,8 @@ import React from 'react';
 import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { Card } from 'primereact/card';
+import { useDidMount } from 'rooks';
+import { useToolbar, fetchApi } from "../engineHooks";
 
 
 const RightPanel =()=> {
@@ -14,9 +16,13 @@ const RightPanel =()=> {
     );
 }
 
-export default function User({useViev}) {
+
+export default function User() {
     const state = useHookstate(globalState.user);
 
+    useDidMount(()=> {
+        useToolbar();
+    });
 
     return(
         <Card style={{width:"100%"}}

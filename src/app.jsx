@@ -25,7 +25,7 @@ export default function BaseContainer() {
     const [view, setView] = React.useState();
     
     useDidMount(()=> {
-        setView(<User/>);
+        setView(<User />);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
@@ -39,11 +39,11 @@ export default function BaseContainer() {
         <>
             <Menubar 
                 model={navigation}
-                start={<img width={50} src={state.logo.get() ?? "https://www.primefaces.org/primereact/images/logo.png"}/>}
-                end={ <Button onClick={()=> setView(<User/>)} icon="pi pi-user"/>}
+                start={ <img width={50} src={state.logo.get() ?? "https://www.primefaces.org/primereact/images/logo.png"}/> }
+                end={ <Button onClick={()=> setView(<User />)} icon="pi pi-user"/>}
             />
             <div style={{display:"flex",flexDirection:"row"}}>
-                <ToolBar/>
+                <ToolBar />
                 { view }
             </div>
             <div style={{textAlign:"center",backgroundColor:"black"}}>

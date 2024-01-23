@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -8,6 +8,27 @@ import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
 import { useInfoToolbar, fetchApi } from "../engineHooks";
 
+
+const AddContact =({useCache})=> {
+    const [state, setState] = React.useState({});
+
+    const setVal =(ev)=> {
+        setState((old)=> {
+            old[ev.target.name] = ev.target.value
+            return old
+        });
+        useCache(state)
+    }
+
+
+    return(
+        <div style={{display:"flex", flexDirection:"column"}}>
+            <AutoComplete name="name" onChange={setVal} placeholder='name'/>
+            <AutoComplete name="telephone" onChange={setVal} placeholder='telephone'/>
+            <AutoComplete name="category" onChange={setVal} placeholder='category'/>
+        </div>
+    )
+}
 
 
 export default function ContactData({useViev}) {
@@ -54,7 +75,17 @@ export default function ContactData({useViev}) {
         }
         else setServerData('delContact',{id:detail});
     }
-    const imageBodyTemplate =(data)=> {
+    const useAddcontact =(ev)=> {
+        let cache = {};
+        confirmPopup({
+            rejectLabel: 'отмена',
+            acceptLabel: 'добвить',
+            target: ev.currentTarget,
+            message: <AddContact useCache={(data)=> cache = data}/>,
+            accept: ()=> setServerData('addContact', cache)
+        });
+    }
+    const imageTemplate =(data)=> {
         return (
             <img 
                 src={data.avatar ?? `https://png.pngtree.com/png-vector/20220527/ourlarge/pngtree-unknown-person-icon-avatar-question-png-image_4760937.png`} 
@@ -68,7 +99,7 @@ export default function ContactData({useViev}) {
         <div className="table-header">
             <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
             <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
-            <Button className="p-button-success" icon="pi pi-plus"/>
+            <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
         </div>
     );
     const footer =(
@@ -88,7 +119,7 @@ export default function ContactData({useViev}) {
                     footer={footer}
                     responsiveLayout="scroll"
                 >
-                    <Column body={imageBodyTemplate}/>
+                    <Column body={imageTemplate}/>
                     <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
                     <Column header="name" body={(rowData)=> 
                         <div>

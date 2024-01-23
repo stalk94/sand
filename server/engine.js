@@ -21,7 +21,7 @@ exports.authVerifu =(login, password)=> {
             delete user.password;
             return user;
         }
-        else return {error: "error password"};
+        else return {error: "error password or login"};
     }
     else return {error: "В доступе отказано invalid login or password"}
 }

@@ -49,13 +49,17 @@ app.post('/readContact', (req, res)=> {
         res.send(cont);
     }
 });
+// !?
 app.post('/addContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error) res.send(verifu);
     else {
-        if(cont[req.body]){
+        if(req.body.name){
+            req.body.id = cont.length;
+            req.body.author = req.body.login;
+            req.body.timeshtamp = new Date().getDate()+":"+new Date().getMonth()+":"+new Date().getFullYear();
             cont.push(req.body);
             db.set("contacts", cont);
         }
