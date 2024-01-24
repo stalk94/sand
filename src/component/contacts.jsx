@@ -54,6 +54,7 @@ const AddContact =({useCache})=> {
 
 export default function ContactData() {
     const [total, setTotal] = React.useState(globalState.contacts.length);
+    const [filter, setFilter] = React.useState(true);
     const [state, setState] = React.useState(globalState.contacts.get());
 
     // важный хук, Отсылает данные на сервер и обновляет global state
@@ -131,23 +132,26 @@ export default function ContactData() {
                 return newState;
             });
         }
+        setFilter(false);
     }
+    
 
     const heaader =(
-        <div style={{display:"flex"}}>
-            <div className="table-header">
-                <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
-                <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
-                <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
-            </div>
-            <div style={{marginLeft:"85%"}}>
-                <Button 
-                    style={{marginRight:"5px"}} 
-                    className="p-button-outlined p-button-secondary" 
-                    icon={<IoReload />}
-                    onClick={()=> {setState(globalState.contacts.get()); setTotal(globalState.contacts.length)}}
-                />
-            </div>
+        <div style={{display:"block"}}>
+            <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
+            <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
+            <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
+            <Button 
+                style={{marginRight:"5px",float:"right"}}
+                disabled={filter} 
+                className="p-button-outlined p-button-secondary" 
+                icon={<IoReload />}
+                onClick={()=> {
+                    setState(globalState.contacts.get()); 
+                    setTotal(globalState.contacts.length); 
+                    setFilter(true);
+                }}
+            />
         </div>
     );
     const footer =(
@@ -172,11 +176,11 @@ export default function ContactData() {
                         <div>
                            { rowData.name }
                             <Button 
-                                    style={{float:"right"}}
-                                    className="p-button-outlined p-button-secondary"
-                                    icon="pi pi-pencil" 
-                                    onClick={(ev)=> useAction("readName", rowData, ev)}
-                                />
+                                style={{float:"right",border:"none"}}
+                                className="p-button-outlined p-button-secondary"
+                                icon="pi pi-pencil" 
+                                onClick={(ev)=> useAction("readName", rowData, ev)}
+                            />
                         </div>
                     }/>
                     <Column 
@@ -185,11 +189,11 @@ export default function ContactData() {
                             <div>
                                 <var onClick={()=> filtre("category", rowData.category)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.category }</var>
                                 <Button 
-                                        style={{float:"right"}}
-                                        className="p-button-outlined p-button-secondary"
-                                        icon="pi pi-pencil"
-                                        onClick={(ev)=> useAction("readCat", rowData, ev)}
-                                    />
+                                    style={{float:"right",border:"none"}}
+                                    className="p-button-outlined p-button-secondary"
+                                    icon="pi pi-pencil"
+                                    onClick={(ev)=> useAction("readCat", rowData, ev)}
+                                />
                             </div>
                         } 
                     />
@@ -197,16 +201,21 @@ export default function ContactData() {
                         <div>
                            { rowData.telephone }
                             <Button 
-                                    style={{float:"right"}}
-                                    className="p-button-outlined p-button-secondary"
-                                    icon="pi pi-pencil" 
-                                    onClick={(ev)=> useAction("readTel", rowData, ev)}
-                                />
+                                style={{float:"right",border:"none"}}
+                                className="p-button-outlined p-button-secondary"
+                                icon="pi pi-pencil" 
+                                onClick={(ev)=> useAction("readTel", rowData, ev)}
+                            />
                         </div>
                     }/>
                     <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
                     <Column header="author" body={(rowData)=> 
-                        <var onClick={()=> filtre("author", rowData.author)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.author }</var>
+                        <var 
+                            onClick={()=> filtre("author", rowData.author)} 
+                            style={{fontSize:"20px",cursor:"pointer",color:globalState.user.login.get()===rowData.author?"#f9cb76":""}}
+                        >
+                            { rowData.author }
+                        </var>
                     }/>
                     <Column 
                         body={(rowData)=> (

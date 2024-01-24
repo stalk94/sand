@@ -5,7 +5,7 @@ const globalState = hookstate({
     cooper: 'Копирайт',
     logo: undefined,
     user: {
-        login: "test",
+        login: "admin",
         token: "",
         id: 0,
         avatar: undefined,
