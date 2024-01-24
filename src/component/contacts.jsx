@@ -2,10 +2,10 @@ import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { useHookstate } from '@hookstate/core';
-import globalState from "../global.state";
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
+import { useHookstate } from '@hookstate/core';
+import globalState from "../global.state";
 import { useInfoToolbar, fetchApi } from "../engineHooks";
 
 
@@ -64,7 +64,7 @@ export default function ContactData({useViev}) {
         );
     }
 
-    const heaader =(
+    const header =(
         <div className="table-header">
             <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
             <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
@@ -84,7 +84,7 @@ export default function ContactData({useViev}) {
                 <ConfirmPopup />
                 <DataTable 
                     value={state.get()} 
-                    header={heaader}
+                    header={header}
                     footer={footer}
                     responsiveLayout="scroll"
                 >
