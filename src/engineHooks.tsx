@@ -38,7 +38,8 @@ export function fetchApi(url: string, data: any, callback: Function) {
         let call = callback;
         if(url==="addTodo" || url==="readTodo" || url==="delTodo"){
             call =(data)=> {
-                globalState.user.todo.set(data);
+                if(data.error) useInfoToolbar("error", "Error", data.error);
+                else globalState.user.todo.set(data);
                 if(callback) callback(data);
             }  
         }
