@@ -1,4 +1,5 @@
 import globalState from "./global.state";
+import { convertArrayToCSV } from "convert-array-to-csv";
 
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
@@ -47,3 +48,11 @@ export function fetchApi(url: string, data: any, callback: Function) {
     }
 }
 
+
+export function loadToCsv(data:[]) {
+    let a = document.createElement("a");
+    let file = new Blob([convertArrayToCSV(data)], {type: 'text/csv'});
+    a.href = URL.createObjectURL(file);
+    a.download = "contact.csv";
+    a.click();
+}

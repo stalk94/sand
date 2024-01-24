@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import globalState from "../global.state";
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
-import { useInfoToolbar, fetchApi } from "../engineHooks";
+import { useInfoToolbar, fetchApi, loadToCsv } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { FaExclamation, FaCrown, FaUser, FaStar } from "react-icons/fa";
 import { MdGroup } from "react-icons/md";
@@ -138,7 +138,7 @@ export default function ContactData() {
 
     const heaader =(
         <div style={{display:"block"}}>
-            <Button style={{marginRight:"5px"}} icon="pi pi-upload"/>
+            <Button style={{marginRight:"5px"}} onClick={()=> loadToCsv(state)} icon="pi pi-upload"/>
             <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
             <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
             <Button 

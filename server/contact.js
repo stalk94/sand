@@ -2,7 +2,6 @@ const db = require("quick.db");
 
 
 
-
 /**
  * 
  */
@@ -19,4 +18,3 @@ exports.Agent = class {
         db.set("agent", data);
     }
 }
-
