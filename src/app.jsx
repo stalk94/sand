@@ -7,6 +7,7 @@ import ContactData from "./component/contacts";
 import User from "./component/user";
 import ToolBar from "./component/toolbar";
 import { useDidMount } from 'rooks';
+import ToDo from './component/todo';
 
 
 
@@ -25,18 +26,18 @@ export default function BaseContainer() {
     const [view, setView] = React.useState();
     
     useDidMount(()=> {
-        setView(<ContactData />);
+        setView(<ToDo/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
-            else if(target==='Планировщик') setView();
+            else if(target==='Планировщик') setView(<ToDo/>);
             else setView();
         });
     });
 
     
     return(
-        <>
+        <div className="app" style={{height: "100vh"}}>
             <Menubar 
                 model={navigation}
                 start={ <img width={50} src={state.logo.get() ?? "https://www.primefaces.org/primereact/images/logo.png"}/> }
@@ -49,6 +50,6 @@ export default function BaseContainer() {
             <div style={{textAlign:"center",backgroundColor:"black"}}>
                 © { globalState.cooper.get() } { new Date().getFullYear() }
             </div>
-        </>
+        </div>
     );
 }

@@ -1,0 +1,11 @@
+.board {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
