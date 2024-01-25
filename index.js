@@ -34,6 +34,20 @@ app.post('/auth', (req, res)=> {
         });
     }
 });
+app.post('/readPassword', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error) res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(user.password===req.body.old){
+            user.password = req.body.password;
+            db.set("users."+req.body.login, user);
+            res.send("Пароль успешно изменен");
+        }
+        else res.send({error:"old password not correct"});
+    }
+});
 app.post('/readContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);

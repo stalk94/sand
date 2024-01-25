@@ -5,8 +5,9 @@ import { Button } from 'primereact/button';
 import globalState from "../global.state";
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
-import { useInfoToolbar, fetchApi, loadToCsv } from "../engineHooks";
+import { useInfoToolbar, fetchApi, loadToCsv, useToolbar } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
+import { useDidMount } from 'rooks';
 import { FaExclamation, FaCrown, FaUser, FaStar } from "react-icons/fa";
 import { MdGroup } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
@@ -134,6 +135,7 @@ export default function ContactData() {
         }
         setFilter(false);
     }
+    useDidMount(()=> useToolbar());
     
 
     const heaader =(
