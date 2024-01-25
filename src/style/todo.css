@@ -2,10 +2,47 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
+    padding: 20px;
+    min-height: 100%;
+    width: 100%;
 }
 
 .list {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.card {
+    min-width: 220px;
+
+    background-color: rgb(99, 99, 99);
+}
+
+.p-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap:  10px;
+}
+
+.toggle-button {
+    max-height: 45px;
+    min-width: 260px;
+}
+
+.list-form {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    gap: 10px;
+    min-width: 260px;
+    max-height: 100px;
+    background-color: #323232;
+    border-radius: 3px;
+}
+
+.list-form__buttons {
+    display: flex;
+    gap: 5px;
+    width: 100%;
 }

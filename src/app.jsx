@@ -37,7 +37,7 @@ export default function BaseContainer() {
 
     
     return(
-        <div className="app" style={{height: "100vh"}}>
+        <div className="app" style={{minHeight: "100vh"}}>
             <Menubar 
                 model={navigation}
                 start={ <img width={50} src={state.logo.get() ?? "https://www.primefaces.org/primereact/images/logo.png"}/> }
@@ -47,7 +47,7 @@ export default function BaseContainer() {
                 <ToolBar />
                 { view }
             </div>
-            <div style={{textAlign:"center",backgroundColor:"black"}}>
+            <div style={{textAlign:"center",backgroundColor:"black", position: "fixed", bottom: "0", width: "100%"}}>
                 © { globalState.cooper.get() } { new Date().getFullYear() }
             </div>
         </div>

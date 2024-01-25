@@ -50,5 +50,5 @@ const App =()=> {
 
 
 window.onload =()=> createRoot(document.querySelector(".root")).render(
-    <App/>
+      <App />
 );
