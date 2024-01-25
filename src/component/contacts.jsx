@@ -139,7 +139,6 @@ export default function ContactData() {
     const heaader =(
         <div style={{display:"block"}}>
             <Button style={{marginRight:"5px"}} onClick={()=> loadToCsv(state)} icon="pi pi-upload"/>
-            <Button style={{marginRight:"5px"}} icon="pi pi-print"/>
             <Button onClick={useAddcontact} className="p-button-success" icon="pi pi-plus"/>
             <Button 
                 style={{marginRight:"5px",float:"right"}}
