@@ -7,7 +7,7 @@ import { useDidMount } from 'rooks';
 import { Menu } from 'primereact/menu';
 import { Fieldset } from 'primereact/fieldset';
 import { Button } from 'primereact/button';
-import { AutoComplete } from 'primereact/autocomplete';
+import { Password } from 'primereact/password';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { useToolbar, fetchApi, useInfoToolbar } from "../engineHooks";
 
@@ -24,8 +24,8 @@ const BasePanel =()=> {
             target: ev.currentTarget,
             message:
                 <>
-                    <AutoComplete minLength={6} placeholder="старый пароль" onChange={(event)=> cache.old = event.value}/>
-                    <AutoComplete minLength={6} placeholder="новый пароль" onChange={(event)=> cache.password = event.value}/>
+                    <Password placeholder="старый пароль" onChange={(event)=> cache.old = event.value} />
+                    <Password placeholder="новый пароль" onChange={(event)=> cache.password = event.value} />
                 </>,
             accept: ()=> fetchApi("readPassword", cache, (val)=> {
                 if(val.error) useInfoToolbar("error", 'Ошибка', val.error);

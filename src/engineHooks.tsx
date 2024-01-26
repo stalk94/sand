@@ -32,10 +32,10 @@ export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, tex
  * @param data 
  * @param callback 
  */
-export function fetchApi(url: string, data: any, callback: Function) {
+export function fetchApi(url: string, data: any, callback: Function|undefined) {
     if(url && globalState.user) {
         let call = callback;
-        if(url==="addTodo" || url==="readTodo" || url==="delTodo"){
+        if(url==="addColumn" || url==="readTodo" || url==="delTodo"){
             call =(data)=> {
                 if(data.error) useInfoToolbar("error", "Error", data.error);
                 else globalState.user.todo.set(data);

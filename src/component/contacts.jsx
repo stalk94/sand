@@ -9,6 +9,7 @@ import { useInfoToolbar, fetchApi, loadToCsv, useToolbar } from "../engineHooks"
 import { Dropdown } from 'primereact/dropdown';
 import { useDidMount } from 'rooks';
 import { FaExclamation, FaCrown, FaUser, FaStar } from "react-icons/fa";
+import { InputText } from 'primereact/inputtext';
 import { MdGroup } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
 
@@ -38,15 +39,16 @@ const AddContact =({useCache})=> {
             return old
         });
         useCache(state);
+        console.log(state);
     }
 
 
     return(
         <div style={{display:"flex", flexDirection:"column"}}>
             <Dropdown name="priorety" options={dropDown} onChange={setVal} placeholder='priority'/>
-            <AutoComplete name="name" onChange={setVal} placeholder='name'/>
-            <AutoComplete name="telephone" onChange={setVal} placeholder='telephone'/>
-            <AutoComplete name="category" onChange={setVal} placeholder='category'/>
+            <InputText name="name" value={state.name} onChange={setVal} placeholder='name' />
+            <InputText name="telephone" value={state.telephone} onChange={setVal} placeholder='telephone' />
+            <InputText name="category" value={state.category} onChange={setVal} placeholder='category' />
         </div>
     )
 }
