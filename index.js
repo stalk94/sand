@@ -34,6 +34,20 @@ app.post('/auth', (req, res)=> {
         });
     }
 });
+app.post('/readPassword', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error) res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(user.password===req.body.old){
+            user.password = req.body.password;
+            db.set("users."+req.body.login, user);
+            res.send("Пароль успешно изменен");
+        }
+        else res.send({error:"old password not correct"});
+    }
+});
 app.post('/readContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
@@ -78,15 +92,15 @@ app.post('/delContact', (req, res)=> {
         res.send(cont);
     }
 });
-app.post('/addTodo', (req, res)=> {
+app.post('/addColumn', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error) res.send(verifu);
     else {
         const user = db.get("users."+req.body.login);
-        if(req.body.cart){
-            req.body.cart.id = user.todo.column.length + 1;
-            user.todo.push(req.body.cart);
+        if(req.body.column){
+            req.body.column.id = user.todo.column.length + 1;
+            user.todo.column.push(req.body.column);
             db.set("users."+req.body.login, user);
         }
         res.send(user.todo);
@@ -99,12 +113,15 @@ app.post('/readTodo', (req, res)=> {
     else {
         const user = db.get("users."+req.body.login);
         if(req.body.todo){
-            user.todo = req.body.todo
+            user.todo = req.body.todo;
             db.set("users."+req.body.login, user);
         }
         res.send(user.todo);
     }
 });
+/**
+ * deprecate
+ */
 app.post('/delTodo', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     

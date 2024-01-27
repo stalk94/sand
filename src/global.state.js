@@ -5,7 +5,7 @@ const globalState = hookstate({
     cooper: 'Копирайт',
     logo: undefined,
     user: {
-        login: "test",
+        login: "admin",
         token: "",
         id: 0,
         avatar: undefined,
@@ -29,8 +29,7 @@ const globalState = hookstate({
             telephone: "+384940932343",
             category: "важные",
             author: "admin",
-            priorety: "star",
-            data: {}
+            priorety: "star"
         },
         {
             id: 1,
@@ -39,8 +38,7 @@ const globalState = hookstate({
             telephone: "+384940932343",
             category: "важн",
             author: "admin",
-            priorety: "star",
-            data: {}
+            priorety: "star"
         }
     ],
     lids: [
