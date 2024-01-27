@@ -4,13 +4,8 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { AutoComplete } from 'primereact/autocomplete';
-<<<<<<< HEAD
-import { useHookstate } from '@hookstate/core';
-import globalState from "../global.state";
-import { useInfoToolbar, fetchApi } from "../engineHooks";
-=======
+
 import { useInfoToolbar, fetchApi, loadToCsv, useToolbar } from "../engineHooks";
->>>>>>> master
 import { Dropdown } from 'primereact/dropdown';
 import { useDidMount } from 'rooks';
 import { FaExclamation, FaCrown, FaUser, FaStar } from "react-icons/fa";
