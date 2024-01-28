@@ -38,7 +38,7 @@ export default function BaseContainer() {
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
-            else if(target==='Планировщик') setView();
+            else if(target==='Планировщик') setView(<ToDo/>);
             else setView();
         });
     });

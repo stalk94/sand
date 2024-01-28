@@ -16,7 +16,10 @@ const globalState = hookstate({
                 index: 0,
                 cards: [{
                     index: 0,
-                    content: {}
+                    content: {
+                        title: '',
+                        text: '',
+                    }
                 }]
             }]
         }
@@ -52,4 +55,4 @@ const globalState = hookstate({
 });
 
 
-export default globalState
+export default globalState;

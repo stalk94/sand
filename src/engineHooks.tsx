@@ -1,6 +1,4 @@
 import globalState from "./global.state";
-import { convertArrayToCSV } from "convert-array-to-csv";
-import { parse } from "papaparse";
 
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
