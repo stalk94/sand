@@ -119,19 +119,19 @@ app.post('/readTodo', (req, res)=> {
         res.send(user.todo);
     }
 });
-/**
- * deprecate
- */
-app.post('/delTodo', (req, res)=> {
+app.post('/addCart', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error) res.send(verifu);
     else {
         const user = db.get("users."+req.body.login);
         if(req.body.cart){
-            user.todo.column.forEach((elem, index)=> {
-                if(elem.id===req.body.cart.id) user.todo.column.splice(index, 1);
-            })
+            user.todo.column.map((column)=> {
+                if(column.id===req.body.parentId){
+                    req.body.cart.id = column.cart.length + 1;
+                    column.cart.push(req.body.cart);
+                }
+            });
             db.set("users."+req.body.login, user);
         }
         res.send(user.todo);
@@ -139,6 +139,6 @@ app.post('/delTodo', (req, res)=> {
 });
 
 
-
+//db.set("users.test.todo", {column:[]});
 app.use('/', express.static(path.join(__dirname, '/dist')));
 server.listen(3000, ()=> console.log("start 3000"));

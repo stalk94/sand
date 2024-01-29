@@ -41,7 +41,15 @@
     border-radius: 3px;
 }
 
-.list-form__buttons {
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgb(99, 99, 99);
+    
+}
+
+.form-buttons__container {
     display: flex;
     gap: 5px;
     width: 100%;
