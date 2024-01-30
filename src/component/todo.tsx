@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import globalState from "../global.state";
+import { useHookstate } from '@hookstate/core';
+import { fetchApi, useInfoToolbar } from "../engineHooks";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Panel } from "primereact/panel";
@@ -6,110 +9,96 @@ import { InputText } from "primereact/inputtext";
 import "./../style/todo.css";
 
 interface IList {
-    listTitle: string;
+    id: number;
+    index: number;
     cards: ICard[];
 }
+
 interface ICard {
-    title: string;
-    content: string;
+    index: number;
+    content: {
+        title: string;
+        text: string;
+    };
 }
 
-const data: IList[] = [
-    {
-        listTitle: "This is list",
-        cards: [
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            }
-        ]
-    },
-    {
-        listTitle: "This is list",
-        cards: [
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            }
-        ]
-    },
-    {
-        listTitle: "This is list",
-        cards: [
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            },
-            {
-            title: "hello admin",
-            content: "skldjfklsdjlf"
-            }
-        ]
-    }
-];
-
-
 export default function ToDo() {
-    const [lists, setLists] = useState<IList[]>(data);
-    const [isCreateListForm, setIsCreateListForm] = useState<boolean>(false);
+    const todo = useHookstate(globalState.user.todo);
+    const [lists, setLists] = useState(todo.column.get());
 
-    const drawBoard = (data) => {
-        console.log(data);
+    const setServerData = (path, data) => {
+        fetchApi(path, data, (val) => {
+            if (val.error) useInfoToolbar("error", 'Ошибка', val.error);
+            else todo.set(val);
+        });
+    }
+
+    const drawBoard = (lists) => {
         return (
             <>
-                {data.map((list: IList) => {
+                {lists.map((list: IList) => {
                     return (
-                        <Panel header={list.listTitle}>
+                        <Panel key={list.id}>
                             {list.cards.map((card: ICard, id: number) => {
-                                return <Card className="card" title={card.title} subTitle={card.content} key={id}/>
+                                return <Card className="card" title={card.content.title} subTitle={card.content.text} key={id}/>
                             })}
+                            {cardForm(list.id)}
                         </Panel>
                     )
                 })}
             </>    
         )
     }
-    const form = () => {
+    const listForm = () => {
+        const [isCreateListForm, setIsCreateListForm] = useState<boolean>(false);
+
         return (
-            <form className="list-form">
-                <InputText />
-                <div className="list-form__buttons">
-                    <Button label="confirn" onClick={((e) => e.preventDefault())}/>
-                    <Button label="cancel" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
-                </div>
-            </form>
+            <>
+                {isCreateListForm ?   
+                    <form className="list-form">
+                        <InputText />
+                        <div className="form-buttons__container">
+                            <Button label="confirn" onClick={((e) => {
+                                    e.preventDefault();
+                                    setServerData('addColumn', {column: {
+                                        index: 0,
+                                        cards: [{index: 0,content: {}}]
+                                    }});
+                                })
+                            }/>
+                            <Button label="cancel" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
+                        </div>
+                    </form>
+                    :
+                    <Button className="toggle-button" label="Create new list" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
+                }
+            </>
         )
     }
-
+    const cardForm = (listId: number) => {
+        const [isCreateCardForm, setIsCreateCardForm] = useState<boolean>(false);
+    
+        return (
+            <>
+                {isCreateCardForm ? 
+                    <form className="card-form">
+                        <InputText  />
+                        <div className="form-buttons__container">
+                            <Button label="confirm" onClick={((e) => e.preventDefault())}/>
+                            <Button label="cancel" onClick={((e) => setIsCreateCardForm(!isCreateCardForm))}/>
+                        </div>
+                    </form>
+                    : 
+                    <Button label="Create new card" onClick={((e) => setIsCreateCardForm(!isCreateCardForm))}/>
+                }
+            </>
+        )
+    }
 
     return (
         <div className="board">
             {drawBoard(lists)}
-            {isCreateListForm ?
-                form()   
-                :
-                <Button className="toggle-button" label="Create new list" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
-            }
+            {listForm()}
         </div>
     )
 }
