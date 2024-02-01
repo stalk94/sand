@@ -9,6 +9,8 @@ import ToolBar from "./component/toolbar";
 import { useDidMount } from 'rooks';
 import { encodeImageFileAsURL, fetchApi, useInfoToolbar } from "./engineHooks";
 import ToDo from './component/todo';
+import Calendar from "./component/calendar";
+
 
 
 
@@ -35,11 +37,12 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<User />);
+        setView(<Calendar />);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
             else if(target==='Планировщик') setView(<ToDo />);
+            else if(target==="Календарь") setView(<Calendar />);
             else setView();
         });
     });

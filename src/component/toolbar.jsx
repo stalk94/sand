@@ -15,8 +15,8 @@ export default function ToolBar() {
     const hookView =(detail)=> {
         if(detail) setState(
             <MegaMenu  
+                style={{width:"20%"}}
                 orientation="vertical"
-                onClick={(ev)=> console.log(ev.target)}
                 start={detail}
             />
         );

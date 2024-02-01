@@ -64,7 +64,10 @@ export default function ContactData() {
     const setServerData =(path, data)=> {
         fetchApi(path, data, (val)=> {
             if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
-            else state.set(val);
+            else {
+                globalState.contacts.set(val);
+                setState(val);
+            };
         });
     }
     const useAction =(action, detail, ev)=> {
@@ -162,7 +165,7 @@ export default function ContactData() {
             Всего контактов: {total}
         </var>
     );
-    
+ 
     
     return(
         <div style={{width:"100%"}} className="datatable-templating-demo">

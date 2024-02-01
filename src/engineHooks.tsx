@@ -1,6 +1,7 @@
 import globalState from "./global.state";
 import { convertArrayToCSV } from "convert-array-to-csv";
 import { parse } from "papaparse";
+import _ from "lodash";
 
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
@@ -89,4 +90,51 @@ export function encodeImageFileAsURL(callback: Function) {
         reader.readAsDataURL(file);
     }
     element.click();
+}
+
+
+/**
+ * Получить сетку календаря
+ * @param year год
+ * @param month номер месяца, начиная с 0 (январь)
+ * @returns array chunk
+ */
+export function getDays(year:number, month:number) {
+    const days = [];
+    const d = new Date(year, month, 1);
+    let ned = 1;
+
+    const dayFillGrid =(arr)=> {
+        const days = ["пн","вт","ср","чт","пт","сб","вс"];
+        let prewIndex = null;
+        let lastIndex = null;
+        days.forEach((elem, index)=> {
+            if(elem===arr[0].dayname) prewIndex = index;
+        });
+        days.forEach((elem, index)=> {
+            if(elem===arr[arr.length-1].dayname) lastIndex = index;
+        });
+        
+        return [...Array(prewIndex).fill(null), ...arr, ...Array(6-lastIndex).fill(null)];
+    }
+    const getWeek =()=> {
+        const name = d.toLocaleString('ru-RU', { weekday: 'short' });
+        if(name==="вс") ned++;
+        return ned;
+    }
+  
+    while (d.getMonth() === month) {
+        const date = d.getDate();
+  
+        days.push({
+            day: date,
+            weeknumber: getWeek(),
+            dayname: d.toLocaleString('ru-RU', { weekday: 'short' })
+        });
+  
+        d.setDate(date + 1);
+    }
+  
+    
+    return _.chunk(dayFillGrid(days), 7);
 }

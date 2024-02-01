@@ -67,13 +67,18 @@ app.post('/readContact', (req, res)=> {
 app.post('/addContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
+    const getMonth =()=> {
+        const month = new Date().getMonth();
+        if(month===0) return `01`;
+        else return month;
+    }
     
     if(verifu.error) res.send(verifu);
     else {
         if(req.body.name){
             req.body.id = cont.length;
             req.body.author = req.body.login;
-            req.body.timeshtamp = new Date().getDate()+":"+new Date().getMonth()+":"+new Date().getFullYear();
+            req.body.timeshtamp = new Date().getDate()+"."+getMonth()+"."+new Date().getFullYear();
             cont.push(req.body);
             db.set("contacts", cont);
         }
