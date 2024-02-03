@@ -12,3 +12,30 @@
     width: 50%;
     height: 100px;
 }
+.row:hover {
+    border: 1px solid orange;
+    color: rgba(255, 51, 0, 0.833);
+}
+.eventColumn {
+    display: flex;
+    flex-direction: column;
+}
+.eventCell {
+    
+}
+.weeks {
+    display: flex;
+    flex-direction: row;
+}
+.week {
+    width: 50%;
+    text-align: center;
+    color: gray;
+}
+.navBar {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    border-bottom: 1px solid gray;
+    padding: 10px;
+}
