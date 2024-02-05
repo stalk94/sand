@@ -1,12 +1,52 @@
 import React from "react";
-import globalState from "../global.state";
-import { useHookstate } from "@hookstate/core";
+import { ModalEventCalendar } from "./modal";
 import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-import { useDidMount } from 'rooks';
+import { useDidMount, useWillUnmount } from 'rooks';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import "../style/calendar.css"
+
+const testEvent = [{
+    id: 0,
+    day: 5,
+    title: "title test",
+    author: "test",
+    to: "user",
+    content: {
+        color: "#f4151585",
+        text: "..."
+    }
+},{
+    id: 1,
+    day: 5,
+    title: "title test",
+    author: "test",
+    content: {
+        color: "#a6f41585",
+        text: "..."
+    }
+},{
+    id: 0,
+    day: 5,
+    title: "title test",
+    author: "test",
+    to: "user",
+    content: {
+        color: "#f4c01585",
+        text: "..."
+    }
+},{
+    id: 1,
+    day: 5,
+    title: "title test",
+    author: "test",
+    content: {
+        color: "orange",
+        text: "..."
+    }
+}];
+
 
 
 const DateCalendarPicker =({curentDate, useDate})=> {
@@ -56,25 +96,26 @@ const GridWeek =()=> {
     );
 }
 const Cell =({events, day, date})=> {
-    const useClickEvent =(ev)=> {
-
+    const useClickEvent =(eventCur)=> {
+        EVENT.emit("clickEvent", {date:date, event:eventCur});
     }
     const useClickCell =()=> {
-
+        console.log("click cell:", day);
+        EVENT.emit("clickCell", {date:date, events:events});
     }
 
 
     return(
         <div className="row" onClick={useClickCell}>
             { day.day }
-            <div className="eventColumn">
-                {events.map((ev, index)=> {
+            <div className="eventColumn" style={{height:"77%"}}>
+                {events.map((event, index)=> {
                     return <div className="eventCell"
                         key={index}
-                        style={{backgroundColor:ev.color}}
-                        onClick={()=> useClickEvent(ev)}
+                        style={{backgroundColor:event.content.color}}
+                        onClick={()=> useClickEvent(event)}
                     >
-
+                        { event.title }
                     </div>
                 })}
             </div>
@@ -83,24 +124,31 @@ const Cell =({events, day, date})=> {
 }
 const GridCalendar =({date})=> {
     const [gridData, setGridData] = React.useState(getDays(date[0], date[1]));
-    const [data, setData] = React.useState([]);
+    const [data, setData] = React.useState(testEvent);      // эвенты
 
    
-    React.useEffect(()=> {
-        setGridData(getDays(date[0], date[1]));
+    const getFetchEventData =()=> {
         fetchApi("getCalendar", {year:date[0], month:date[1]}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else setData(res);
         });
-    }, date);
+    }
     const useEvent =(day)=> {
         const result = [];
-        data.forEach((event, index)=> {
+        data.forEach((event)=> {
             if(day.day===event.day) result.push(event);
         });
 
+        
         return result;
     }
+    useDidMount(()=> EVENT.on("eventUpdate", getFetchEventData));
+    useWillUnmount(()=> EVENT.off("eventUpdate", getFetchEventData));
+    React.useEffect(()=> {
+        setGridData(getDays(date[0], date[1]));
+        //getFetchEventData();
+    }, date);
+    
 
     
     return(
@@ -120,7 +168,7 @@ const GridCalendar =({date})=> {
 
 
 export default function BaseContainer() {
-    const [date, setDate] = React.useState([new Date().getFullYear(), new Date().getMonth()])
+    const [date, setDate] = React.useState([new Date().getFullYear(), new Date().getMonth()]);
 
     useDidMount(()=> {
         useToolbar(".");
@@ -128,10 +176,13 @@ export default function BaseContainer() {
 
 
     return(
-        <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
-            <DateCalendarPicker curentDate={date} useDate={setDate}/>
-            <GridWeek/>
-            <GridCalendar date={date}/>
-        </div>
+        <>
+            <ModalEventCalendar />
+            <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
+                <DateCalendarPicker curentDate={date} useDate={setDate}/>
+                <GridWeek/>
+                <GridCalendar date={date}/>
+            </div>
+        </>
     );
 }
