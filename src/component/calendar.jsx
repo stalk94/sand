@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalEventCalendar } from "./modal";
+import { ModalEventCalendar, ModalAddEvent } from "./modal";
 import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -15,34 +15,6 @@ const testEvent = [{
     to: "user",
     content: {
         color: "#f4151585",
-        text: "..."
-    }
-},{
-    id: 1,
-    day: 5,
-    title: "title test",
-    author: "test",
-    content: {
-        color: "#a6f41585",
-        text: "..."
-    }
-},{
-    id: 0,
-    day: 5,
-    title: "title test",
-    author: "test",
-    to: "user",
-    content: {
-        color: "#f4c01585",
-        text: "..."
-    }
-},{
-    id: 1,
-    day: 5,
-    title: "title test",
-    author: "test",
-    content: {
-        color: "orange",
         text: "..."
     }
 }];
@@ -99,9 +71,11 @@ const Cell =({events, day, date})=> {
     const useClickEvent =(eventCur)=> {
         EVENT.emit("clickEvent", {date:date, event:eventCur});
     }
-    const useClickCell =()=> {
-        console.log("click cell:", day);
-        EVENT.emit("clickCell", {date:date, events:events});
+    const useClickCell =(ev)=> {
+        if(ev.target.className==="row"||ev.target.className==="eventColumn"){
+            console.log("clickCell");
+            EVENT.emit("clickCell", {date:date, events:events});
+        }
     }
 
 
@@ -176,13 +150,13 @@ export default function BaseContainer() {
 
 
     return(
-        <>
-            <ModalEventCalendar />
+        <React.Fragment>
+            <ModalEventCalendar/>
             <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
                 <DateCalendarPicker curentDate={date} useDate={setDate}/>
                 <GridWeek/>
                 <GridCalendar date={date}/>
             </div>
-        </>
+        </React.Fragment>
     );
 }
