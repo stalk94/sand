@@ -147,7 +147,11 @@ app.post("/getCalendar", (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
 
     if(verifu.error) res.send(verifu);
-    else res.send(db.get("calendar."+req.body.year+"."+req.body.month));
+    else {
+        const calendar = db.get("calendar."+req.body.year+"."+req.body.month);
+        if(calendar) res.send(calendar);
+        else res.send([]);
+    }
 });
 app.post('/addEvent', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);

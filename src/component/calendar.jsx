@@ -151,8 +151,8 @@ export default function BaseContainer() {
 
     return(
         <React.Fragment>
-            <ModalEventCalendar/>
-            <ModalAddEvent/>
+            <ModalEventCalendar />
+            <ModalAddEvent />
             <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
                 <DateCalendarPicker curentDate={date} useDate={setDate}/>
                 <GridWeek/>

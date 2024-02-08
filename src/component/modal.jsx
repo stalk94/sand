@@ -9,12 +9,14 @@ import "../style/modal.css";
 
 
 
-export function ModalAddEvent() {
+export function ModalAddEvent({test}) {
     const users = useHookstate(globalState.users);
     const [view, setView] = React.useState(false);
     const [date, setDate] = React.useState([]);
 
-    const useCreateEvent =(newEvent)=> {
+    const useCreateEvent =()=> {
+        const newEvent = {};
+        
         fetchApi("addEvent", {date:{year:date[0],month:date[1]}, event:newEvent}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else EVENT.emit("eventUpdate", res);
@@ -34,7 +36,7 @@ export function ModalAddEvent() {
                 title={<div></div>}
                 footer={
                     <span>
-                        <Button label="Add event" icon="pi pi-check" className="p-button-success" style={{marginRight:'20px'}}/>
+                        <Button onClick={useCreateEvent} label="Add event" icon="pi pi-check" className="p-button-success" style={{marginRight:'20px'}}/>
                         <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
                     </span>
                 }
@@ -61,7 +63,7 @@ export function ModalEventCalendar({test}) {
     });
 
     const useDelEvent =()=> {
-        fetchApi("delEvent", {date:{year:date[0],month:date[1]}, event:event}, (res)=> {
+        fetchApi("delEvent", {date:{year:date[0], month:date[1]}, event:event}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else EVENT.emit("eventUpdate", res);
         });
@@ -87,7 +89,7 @@ export function ModalEventCalendar({test}) {
                 }
                 footer={
                     <span>
-                        <Button label="Delete" icon="pi pi-trash" className="p-button-danger" style={{marginRight:'20px'}}/>
+                        <Button onClick={useDelEvent} label="Delete" icon="pi pi-trash" className="p-button-danger" style={{marginRight:'20px'}}/>
                         <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
                     </span>
                 }
