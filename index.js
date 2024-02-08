@@ -28,10 +28,10 @@ app.post('/auth', (req, res)=> {
             user: userData,
             contacts: db.get("contacts"),
             lids: db.get("lids"),
-            calendar: db.get("calendar"),
             stat: db.get("stat"),
             cooper: db.get("cooper"),
-            logo: db.get("logo")
+            logo: db.get("logo"),
+            users: Object.values(db.get("users"))
         });
     }
 });
@@ -143,7 +143,41 @@ app.post('/addCart', (req, res)=> {
         res.send(user.todo);
     }
 });
+app.post("/getCalendar", (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
 
+    if(verifu.error) res.send(verifu);
+    else res.send(db.get("calendar."+req.body.year+"."+req.body.month));
+});
+app.post('/addEvent', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        const date = req.body.date;
+        const events = db.get("calendar."+date.year+"."+date.month);
+
+        if(events) db.set("calendar."+date.year+"."+date.month, [...events, req.body.event]);
+        else db.set("calendar."+date.year+"."+date.month, [req.body.event]);
+
+        res.send("successful");
+    }
+});
+app.post('/delEvent', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        const date = req.body.date;
+        const events = db.get("calendar."+date.year+"."+date.month, req.body.event);
+        events.forEach((ev, index)=> {
+            if(ev.day===req.body.event.day && ev.id===req.body.event.id) events.splice(index, 1);
+        });
+        db.set("calendar."+date.year+"."+date.month, events);
+
+        res.send("successful");
+    }
+});
 
 
 //db.set("users.test.todo", {column:[]});

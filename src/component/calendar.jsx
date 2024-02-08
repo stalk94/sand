@@ -73,7 +73,6 @@ const Cell =({events, day, date})=> {
     }
     const useClickCell =(ev)=> {
         if(ev.target.className==="row"||ev.target.className==="eventColumn"){
-            console.log("clickCell");
             EVENT.emit("clickCell", {date:date, events:events});
         }
     }
@@ -107,6 +106,7 @@ const GridCalendar =({date})=> {
             else setData(res);
         });
     }
+    // промодернизировать для фильтров
     const useEvent =(day)=> {
         const result = [];
         data.forEach((event)=> {
@@ -120,7 +120,7 @@ const GridCalendar =({date})=> {
     useWillUnmount(()=> EVENT.off("eventUpdate", getFetchEventData));
     React.useEffect(()=> {
         setGridData(getDays(date[0], date[1]));
-        //getFetchEventData();
+        getFetchEventData();
     }, date);
     
 
@@ -152,6 +152,7 @@ export default function BaseContainer() {
     return(
         <React.Fragment>
             <ModalEventCalendar/>
+            <ModalAddEvent/>
             <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
                 <DateCalendarPicker curentDate={date} useDate={setDate}/>
                 <GridWeek/>

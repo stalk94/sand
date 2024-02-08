@@ -48,7 +48,8 @@ const globalState = hookstate({
         {id:3,server:3,avatar:undefined,name:'Василий Еблан',rating:[100,10],data:{},money:100000,permision:2}
     ],
     calendar: {},
-    stat: {}
+    stat: {},
+    users: []
 });
 
 

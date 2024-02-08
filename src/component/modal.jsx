@@ -2,7 +2,6 @@ import React from "react";
 import globalState from "../global.state";
 import { useHookstate } from "@hookstate/core";
 import { useDidMount, useWillUnmount } from 'rooks';
-import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { useInfoToolbar, fetchApi, useToolbar } from "../engineHooks";
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
@@ -11,19 +10,38 @@ import "../style/modal.css";
 
 
 export function ModalAddEvent() {
+    const users = useHookstate(globalState.users);
+    const [view, setView] = React.useState(false);
+    const [date, setDate] = React.useState([]);
+
     const useCreateEvent =(newEvent)=> {
         fetchApi("addEvent", {date:{year:date[0],month:date[1]}, event:newEvent}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else EVENT.emit("eventUpdate", res);
         });
     }
-    confirmPopup({
-        rejectLabel: 'отмена',
-        acceptLabel: 'изменить',
-        target: undefined,
-        message: <ViewEvent />,
-        accept: ()=> setServerData('readContact', {name:cache, id:detail.id})
-    });
+    const eventOn =(obj)=> {
+        setDate(obj.date);
+        setView(true);
+    }
+    useDidMount(()=> EVENT.on("clickCell", eventOn));
+    useWillUnmount(()=> EVENT.off("clickCell", eventOn));
+    
+
+    return(
+        <div className="modalContainer" style={{display:view||test?"":"none"}}>
+            <Card 
+                title={<div></div>}
+                footer={
+                    <span>
+                        <Button label="Add event" icon="pi pi-check" className="p-button-success" style={{marginRight:'20px'}}/>
+                        <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
+                    </span>
+                }
+            >
+            </Card>
+        </div>
+    );
 }
 
 
