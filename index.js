@@ -161,7 +161,11 @@ app.post('/addEvent', (req, res)=> {
         const date = req.body.date;
         const events = db.get("calendar."+date.year+"."+date.month);
 
-        if(events) db.set("calendar."+date.year+"."+date.month, [...events, req.body.event]);
+        if(events) {
+            req.body.event.id = events.length+1;
+            req.body.event.author = req.body.login;
+            db.set("calendar."+date.year+"."+date.month, [...events, req.body.event]);
+        }
         else db.set("calendar."+date.year+"."+date.month, [req.body.event]);
 
         res.send("successful");

@@ -69,11 +69,11 @@ const GridWeek =()=> {
 }
 const Cell =({events, day, date})=> {
     const useClickEvent =(eventCur)=> {
-        EVENT.emit("clickEvent", {date:date, event:eventCur});
+        EVENT.emit("clickEvent", {date:[...date, day.day], event:eventCur});
     }
     const useClickCell =(ev)=> {
         if(ev.target.className==="row"||ev.target.className==="eventColumn"){
-            EVENT.emit("clickCell", {date:date, events:events});
+            EVENT.emit("clickCell", {date:[...date, day.day], events:events});
         }
     }
 
