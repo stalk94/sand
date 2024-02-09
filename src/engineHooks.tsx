@@ -3,6 +3,7 @@ import { convertArrayToCSV } from "convert-array-to-csv";
 import { parse } from "papaparse";
 import _ from "lodash";
 
+
 /**
  * Левая панель инструментов. Удобно использовать в useEffect
  * @param children элементы которые мы хотим отобразить. Если ничего не передается в аргумент то панель не показываеться
@@ -99,7 +100,7 @@ export function encodeImageFileAsURL(callback: Function) {
  * @param month номер месяца, начиная с 0 (январь)
  * @returns array chunk
  */
-export function getDays(year:number, month:number) {
+export function getDays(year:number, month:number): Array<Array<{day:number,weeknumber:number,dayname:string}>> {
     const days = [];
     const d = new Date(year, month, 1);
     let ned = 1;
@@ -123,7 +124,7 @@ export function getDays(year:number, month:number) {
         return ned;
     }
   
-    while (d.getMonth() === month) {
+    while(d.getMonth()===month) {
         const date = d.getDate();
   
         days.push({

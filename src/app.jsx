@@ -43,6 +43,8 @@ export default function BaseContainer() {
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
             else if(target==='Планировщик') setView(<ToDo />);
             else if(target==="Календарь") setView(<Calendar />);
+            else if(target==="Статистика") setView();
+            else if(target==="Лиды") setView();
             else setView();
         });
     });
