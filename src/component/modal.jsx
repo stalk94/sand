@@ -34,7 +34,15 @@ export function ModalAddEvent() {
         
         fetchApi("addEvent", {date:{year:date[0],month:date[1]}, event:newEvent}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
-            else EVENT.emit("eventUpdate", res);
+            else {
+                useInfoToolbar("sucess", "Успешно", res.sucess);
+                EVENT.emit("eventUpdate", res);
+                setView(false);
+                setColor("");
+                setText("");
+                setTitle("");
+                setTo("");
+            }
         });
     }
     const eventOn =(obj)=> {
@@ -43,8 +51,8 @@ export function ModalAddEvent() {
     }
     const useDataInput =(ev)=> {
         if(ev.target.name==="to") setTo(ev.value);
-        else if(ev.target.name==="title") setTitle(ev.value);
-        else if(ev.target.name==="text") setText(ev.value);
+        else if(ev.target.name==="title") setTitle(ev.target.value);
+        else if(ev.target.name==="text") setText(ev.target.value);
         else setColor(ev.value);
     }
     const getUserName =()=> {
@@ -96,7 +104,11 @@ export function ModalEventCalendar({test}) {
     const useDelEvent =()=> {
         fetchApi("delEvent", {date:{year:date[0], month:date[1]}, event:event}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
-            else EVENT.emit("eventUpdate", res);
+            else {
+                useInfoToolbar("sucess", "Успешно", res.sucess);
+                EVENT.emit("eventUpdate", res);
+                setView(false);
+            }
         });
     }
     const eventOn =(obj)=> {

@@ -146,9 +146,9 @@ app.post('/addCart', (req, res)=> {
 app.post("/getCalendar", (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
 
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
-        const calendar = db.get("calendar."+req.body.year+"."+req.body.month);
+        const calendar = db.get("calendar."+req.body.year+":"+req.body.month);
         if(calendar) res.send(calendar);
         else res.send([]);
     }
@@ -156,36 +156,40 @@ app.post("/getCalendar", (req, res)=> {
 app.post('/addEvent', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
         const date = req.body.date;
-        const events = db.get("calendar."+date.year+"."+date.month);
+        const events = db.get(`calendar.${date.year}:${date.month}`);
+        req.body.event.author = req.body.login;
 
         if(events) {
             req.body.event.id = events.length+1;
-            req.body.event.author = req.body.login;
-            db.set("calendar."+date.year+"."+date.month, [...events, req.body.event]);
+            db.set(`calendar.${date.year}:${date.month}`, [...events, req.body.event]);
         }
-        else db.set("calendar."+date.year+"."+date.month, [req.body.event]);
+        else {
+            req.body.event.id = 0;
+            db.set("calendar."+date.year+":"+date.month, [req.body.event]);
+        }
 
-        res.send("successful");
+        res.send({sucess: "Добавлено новое задание"});
     }
 });
 app.post('/delEvent', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
         const date = req.body.date;
-        const events = db.get("calendar."+date.year+"."+date.month, req.body.event);
+        const events = db.get(`calendar.${date.year}:${date.month}`);
         events.forEach((ev, index)=> {
             if(ev.day===req.body.event.day && ev.id===req.body.event.id) events.splice(index, 1);
         });
-        db.set("calendar."+date.year+"."+date.month, events);
+        db.set(`calendar.${date.year}:${date.month}`, events);
 
-        res.send("successful");
+        res.send({sucess: "Задание удалено"});
     }
 });
+
 
 
 //db.set("users.test.todo", {column:[]});
