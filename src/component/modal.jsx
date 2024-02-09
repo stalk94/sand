@@ -10,9 +10,15 @@ import { InputText } from 'primereact/inputtext';
 import "../style/modal.css";
 
 
+const colors = [
+    {label: <div style={{color:"#f4151585"}}>Красный</div>, value: "#f4151585"},
+    {label: <div style={{color:"#73df26cf"}}>Зеленый</div>, value: "#73df26cf"},
+    {label: <div style={{color:"#e7ce0dcf"}}>Ораньжевый</div>, value: "#e7ce0dcf"},
+    {label: <div style={{color:"#2660e8cf"}}>Синий</div>, value: "#2660e8cf"}
+];
+
 
 export function ModalAddEvent() {
-    const colors = ['red', 'green'];
     const users = useHookstate(globalState.users);
     const [view, setView] = React.useState(false);
     const [date, setDate] = React.useState([]);
@@ -56,7 +62,11 @@ export function ModalAddEvent() {
         else setColor(ev.value);
     }
     const getUserName =()=> {
-
+        const result = [];
+        users.forEach((user)=> {
+            if(user.permision<=globalState.user.permision.get()) result.push(user.login);
+        });
+        return result;
     }
     useDidMount(()=> EVENT.on("clickCell", eventOn));
     useWillUnmount(()=> EVENT.off("clickCell", eventOn));
@@ -68,7 +78,7 @@ export function ModalAddEvent() {
                 title={
                     <div className="column">
                         <InputText name="title" value={title} onChange={useDataInput} placeholder='title'/>
-                        <Dropdown name="to" value={to} onChange={useDataInput} options={colors}/>
+                        <Dropdown name="to" value={to} onChange={useDataInput} options={getUserName()}/>
                         <Dropdown name="color" value={color} onChange={useDataInput} options={colors}/>
                         <InputText name="text" value={text} onChange={useDataInput} placeholder='text'/>
                     </div>

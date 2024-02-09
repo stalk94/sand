@@ -1,20 +1,23 @@
 import React from "react";
+import globalState from "../global.state";
 import { ModalEventCalendar, ModalAddEvent } from "./modal";
 import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { useDidMount, useWillUnmount } from 'rooks';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import "../style/calendar.css"
+import { Menu } from 'primereact/menu';
+import "../style/calendar.css";
+
 
 const testEvent = [{
     id: 0,
     day: 5,
     title: "title test",
     author: "test",
-    to: "user",
+    to: "test",
     content: {
-        color: "#f4151585",
+        color: "#2660e8cf",
         text: "..."
     }
 }];
@@ -88,7 +91,7 @@ const Cell =({events, day, date})=> {
                         style={{backgroundColor:event.content.color}}
                         onClick={()=> useClickEvent(event)}
                     >
-                        { event.title }
+                        {event.to===globalState.user.login.get()?"💡 "+ event.title: event.title}
                     </div>
                 })}
             </div>
@@ -97,7 +100,7 @@ const Cell =({events, day, date})=> {
 }
 const GridCalendar =({date})=> {
     const [gridData, setGridData] = React.useState(getDays(date[0], date[1]));
-    const [data, setData] = React.useState(testEvent);      // эвенты
+    const [data, setData] = React.useState(testEvent); // эвенты
 
    
     const getFetchEventData =()=> {
@@ -106,18 +109,28 @@ const GridCalendar =({date})=> {
             else setData(res);
         });
     }
-    // промодернизировать для фильтров
     const useEvent =(day)=> {
         const result = [];
         data.forEach((event)=> {
             if(day.day===event.day) result.push(event);
         });
-
-        
+ 
         return result;
     }
-    useDidMount(()=> EVENT.on("eventUpdate", getFetchEventData));
-    useWillUnmount(()=> EVENT.off("eventUpdate", getFetchEventData));
+    const useFiltre =(req)=> {
+        if(req.type==="myEvent") setData((events)=> 
+            events.filter((ev)=> ev.to===globalState.user.login.get() && ev 
+        ));
+        else if(req.type==="all") getFetchEventData();
+    }
+    useDidMount(()=> {
+        EVENT.on("eventUpdate", getFetchEventData);
+        EVENT.on("eventFiltre", useFiltre);
+    });
+    useWillUnmount(()=> {
+        EVENT.off("eventUpdate", getFetchEventData);
+        EVENT.off("eventFiltre", useFiltre);
+    });
     React.useEffect(()=> {
         setGridData(getDays(date[0], date[1]));
         getFetchEventData();
@@ -145,7 +158,18 @@ export default function BaseContainer() {
     const [date, setDate] = React.useState([new Date().getFullYear(), new Date().getMonth()]);
 
     useDidMount(()=> {
-        useToolbar(".");
+        const items = [{   
+                label: 'Показать все', 
+                icon: 'pi pi-align-justify', 
+                command:()=> EVENT.emit("eventFiltre", {type:"all"})
+            },{   
+                label: 'Назначенные мне', 
+                icon: 'pi pi-user', 
+                command:()=> EVENT.emit("eventFiltre", {type:"myEvent"})
+            },
+        ];
+
+        useToolbar(<Menu model={items}/>);
     });
 
 
