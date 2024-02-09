@@ -121,7 +121,10 @@ const GridCalendar =({date})=> {
         if(req.type==="myEvent") setData((events)=> 
             events.filter((ev)=> ev.to===globalState.user.login.get() && ev 
         ));
-        else if(req.type==="all") getFetchEventData();
+        else if(req.type==="myCreate") setData((events)=> 
+            events.filter((ev)=> ev.author===globalState.user.login.get() && ev 
+        ));
+        else if(req.type==="all") getFetchEventData(); 
     }
     useDidMount(()=> {
         EVENT.on("eventUpdate", getFetchEventData);
@@ -166,7 +169,11 @@ export default function BaseContainer() {
                 label: 'Назначенные мне', 
                 icon: 'pi pi-user', 
                 command:()=> EVENT.emit("eventFiltre", {type:"myEvent"})
-            },
+            },{   
+                label: 'Созданные мной', 
+                icon: 'pi pi-user-plus', 
+                command:()=> EVENT.emit("eventFiltre", {type:"myCreate"})
+            }
         ];
 
         useToolbar(<Menu model={items}/>);
