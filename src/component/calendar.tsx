@@ -1,5 +1,6 @@
 import React from "react";
 import globalState from "../global.state";
+import { EventCalendar, Day } from "../lib/type";
 import { ModalEventCalendar, ModalAddEvent } from "./modal.calendar";
 import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
@@ -39,7 +40,7 @@ const DateCalendarPicker =({curentDate, useDate})=> {
 
         setArrYear(arr);
     });
-    const useClick =(val)=> {
+    const useClick =(val:"left"|"right")=> {
         if(val==="left"){
             if(curentDate[1]===0) useDate([curentDate[0]-1, 11]);
             else useDate([curentDate[0], curentDate[1]-1]);
@@ -71,10 +72,10 @@ const GridWeek =()=> {
     );
 }
 const Cell =({events, day, date})=> {
-    const useClickEvent =(eventCur)=> {
+    const useClickEvent =(eventCur:EventCalendar)=> {
         EVENT.emit("clickEvent", {date:[...date, day.day], event:eventCur});
     }
-    const useClickCell =(ev)=> {
+    const useClickCell:React.MouseEventHandler =(ev)=> {
         if(ev.target.className==="row"||ev.target.className==="eventColumn"){
             EVENT.emit("clickCell", {date:[...date, day.day], events:events});
         }
@@ -85,13 +86,13 @@ const Cell =({events, day, date})=> {
         <div className="row" onClick={useClickCell}>
             { day.day }
             <div className="eventColumn" style={{height:"77%"}}>
-                {events.map((event, index)=> {
+                {events.map((event:EventCalendar, index:number)=> {
                     return <div className="eventCell"
                         key={index}
                         style={{backgroundColor:event.content.color}}
                         onClick={()=> useClickEvent(event)}
                     >
-                        {event.to===globalState.user.login.get()?"💡 "+ event.title: event.title}
+                        {event.to===globalState.user.login.get()?"💡 "+ event.title : event.title}
                     </div>
                 })}
             </div>
@@ -100,24 +101,23 @@ const Cell =({events, day, date})=> {
 }
 const GridCalendar =({date})=> {
     const [gridData, setGridData] = React.useState(getDays(date[0], date[1]));
-    const [data, setData] = React.useState(testEvent); // эвенты
-
+    const [data, setData] = React.useState<Array<EventCalendar>>(testEvent);
    
     const getFetchEventData =()=> {
-        fetchApi("getCalendar", {year:date[0], month:date[1]}, (res)=> {
+        fetchApi("getCalendar", {year:date[0], month:date[1]}, (res:{error:string}|Array<EventCalendar>)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else setData(res);
         });
     }
-    const useEvent =(day)=> {
+    const useEvent =(day:Day)=> {
         const result = [];
-        data.forEach((event)=> {
+        data.forEach((event:EventCalendar)=> {
             if(day.day===event.day) result.push(event);
         });
  
         return result;
     }
-    const useFiltre =(req)=> {
+    const useFiltre =(req:{type:string})=> {
         if(req.type==="myEvent") setData((events)=> 
             events.filter((ev)=> ev.to===globalState.user.login.get() && ev 
         ));
@@ -145,9 +145,9 @@ const GridCalendar =({date})=> {
     
     return(
         <div style={{display:"grid", width:"100%", height:"100%"}}>
-            {gridData.map((chank, index)=> {
+            {gridData.map((chank, index:number)=> {
                 return <div key={index} className="base">
-                    {chank.map((day, indexDay)=> {
+                    {chank.map((day:Day, indexDay:number)=> {
                         if(day===null) return <div key={indexDay} className="nullRow"></div>
                         else return <Cell events={useEvent(day)} key={indexDay} date={date} day={day}/>
                     })}

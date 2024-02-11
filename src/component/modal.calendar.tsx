@@ -1,4 +1,5 @@
 import React from "react";
+import { EventCalendar, User } from "../lib/type";
 import globalState from "../global.state";
 import { useHookstate } from "@hookstate/core";
 import { useDidMount, useWillUnmount } from 'rooks';
@@ -20,12 +21,12 @@ const colors = [
 
 export function ModalAddEvent() {
     const users = useHookstate(globalState.users);
-    const [view, setView] = React.useState(false);
+    const [view, setView] = React.useState<boolean>(false);
     const [date, setDate] = React.useState([]);
-    const [color, setColor] = React.useState("");
-    const [title, setTitle] = React.useState("");
-    const [text, setText] = React.useState("");
-    const [to, setTo] = React.useState("");
+    const [color, setColor] = React.useState<string>("");
+    const [title, setTitle] = React.useState<string>("");
+    const [text, setText] = React.useState<string>("");
+    const [to, setTo] = React.useState<string>("");
 
     const useCreateEvent =()=> {
         const newEvent = {
@@ -51,11 +52,11 @@ export function ModalAddEvent() {
             }
         });
     }
-    const eventOn =(obj)=> {
+    const eventOn =(obj:{event:EventCalendar,date:Array<number>})=> {
         setDate(obj.date);
         setView(true);
     }
-    const useDataInput =(ev)=> {
+    const useDataInput:React.ChangeEventHandler =(ev)=> {
         if(ev.target.name==="to") setTo(ev.value);
         else if(ev.target.name==="title") setTitle(ev.target.value);
         else if(ev.target.name==="text") setText(ev.target.value);
@@ -96,10 +97,10 @@ export function ModalAddEvent() {
 }
 
 
-export function ModalEventCalendar({test}) {
-    const [view, setView] = React.useState(false);
-    const [date, setDate] = React.useState([]);
-    const [event, setEvent] = React.useState({
+export function ModalEventCalendar() {
+    const [view, setView] = React.useState<boolean>(false);
+    const [date, setDate] = React.useState<Array<number>>([]);
+    const [event, setEvent] = React.useState<EventCalendar>({
         id: 0,
         day: 5,
         title: "title test",
@@ -121,7 +122,7 @@ export function ModalEventCalendar({test}) {
             }
         });
     }
-    const eventOn =(obj)=> {
+    const eventOn =(obj:{event:EventCalendar,date:Array<number>})=> {
         setEvent(obj.event);
         setDate(obj.date);
         setView(true);
@@ -131,7 +132,7 @@ export function ModalEventCalendar({test}) {
 
 
     return(
-        <div className="modalContainer" style={{display:view||test?"":"none"}}>
+        <div className="modalContainer" style={{display:view?"":"none"}}>
             <Card 
                 title={<div style={{color:event.content.color}}>{event.title}</div>}
                 subTitle={
