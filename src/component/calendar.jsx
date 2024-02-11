@@ -1,6 +1,6 @@
 import React from "react";
 import globalState from "../global.state";
-import { ModalEventCalendar, ModalAddEvent } from "./modal";
+import { ModalEventCalendar, ModalAddEvent } from "./modal.calendar";
 import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -121,9 +121,11 @@ const GridCalendar =({date})=> {
         if(req.type==="myEvent") setData((events)=> 
             events.filter((ev)=> ev.to===globalState.user.login.get() && ev 
         ));
-        else if(req.type==="myCreate") setData((events)=> 
-            events.filter((ev)=> ev.author===globalState.user.login.get() && ev 
-        ));
+        else if(req.type==="myCreate") setData((events)=> {
+                getFetchEventData();
+                return events.filter((ev)=> ev.author===globalState.user.login.get() && ev);
+            }
+        );
         else if(req.type==="all") getFetchEventData(); 
     }
     useDidMount(()=> {

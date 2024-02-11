@@ -8,7 +8,7 @@ import _ from "lodash";
  * Левая панель инструментов. Удобно использовать в useEffect
  * @param children элементы которые мы хотим отобразить. Если ничего не передается в аргумент то панель не показываеться
  */
-export function useToolbar(children: JSX.Element|string|undefined) {
+export function useToolbar(children:JSX.Element|string|undefined) {
     EVENT.emit("toolbar", children);
 }
 
@@ -18,7 +18,7 @@ export function useToolbar(children: JSX.Element|string|undefined) {
  * @param title заголовок к примеру "Внимание"
  * @param text
  */
-export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, text: string) {
+export function useInfoToolbar(type:"error"|"sucess"|"warn", title:string, text:string) {
     const detail = {
         type: type,
         title: title,
@@ -34,7 +34,7 @@ export function useInfoToolbar(type: "error"|"sucess"|"warn", title: string, tex
  * @param data 
  * @param callback 
  */
-export function fetchApi(url: string, data: any, callback: Function|undefined) {
+export function fetchApi(url:string, data:any, callback:Function|undefined) {
     if(url && globalState.user) {
         let call = callback;
         if(url==="addColumn" || url==="readTodo" || url==="delTodo"){
@@ -54,7 +54,7 @@ export function fetchApi(url: string, data: any, callback: Function|undefined) {
  * Преобразовует массив в CSV и загружает его на устройство.
  * @param data массив для преобразования
  */
-export function loadToCsv(data: []) {
+export function loadToCsv(data:Array<object>) {
     let a = document.createElement("a");
     let file = new Blob([convertArrayToCSV(data)], {type: 'text/csv'});
     a.href = URL.createObjectURL(file);
@@ -68,7 +68,7 @@ export function loadToCsv(data: []) {
  * @param toObj разбирать в массив обьектов (true), в массив массивов (false)
  * @returns 
  */
-export function csvToJson(data: string, toObj: boolean|undefined): object|[]|void {
+export function csvToJson(data:string, toObj:boolean|undefined): object|[]|void {
     const result = parse(data, {header: toObj??true});
     if(result.errors.length===0) return result.data;
     else useInfoToolbar("error", "Error import", result.errors.join());
@@ -80,7 +80,7 @@ export function csvToJson(data: string, toObj: boolean|undefined): object|[]|voi
  * Вызов функции открывает меню выбора файла для загрузки.
  * @param callback обратный вызов в который передасться строка Base64
  */
-export function encodeImageFileAsURL(callback: Function) {
+export function encodeImageFileAsURL(callback:Function) {
     const element = document.createElement("input");
     element.type = "file";
     element.accept = ".png,.jpg";

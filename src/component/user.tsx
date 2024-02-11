@@ -1,4 +1,5 @@
 import "../style/user.css";
+import { Responce } from "../lib/type";
 import React from 'react';
 import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
@@ -11,12 +12,12 @@ import { Password } from 'primereact/password';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { useToolbar, fetchApi, useInfoToolbar } from "../engineHooks";
 
-
+ 
 const BasePanel =()=> {
-    const state = useHookstate(globalState.user);
     const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
-
-    const readPassword =(ev)=> {
+    const state = useHookstate(globalState.user);
+    
+    const readPassword:React.MouseEventHandler =(ev)=> {
         const cache = {old: "", password: ""};
         confirmPopup({
             rejectLabel: 'отмена',
@@ -24,15 +25,16 @@ const BasePanel =()=> {
             target: ev.currentTarget,
             message:
                 <>
-                    <Password placeholder="старый пароль" onChange={(event)=> cache.old = event.value} />
-                    <Password placeholder="новый пароль" onChange={(event)=> cache.password = event.value} />
+                    <Password placeholder="старый пароль" onChange={(event:React.ChangeEvent)=> cache.old = event.value} />
+                    <Password placeholder="новый пароль" onChange={(event:React.ChangeEvent)=> cache.password = event.value} />
                 </>,
-            accept: ()=> fetchApi("readPassword", cache, (val)=> {
+            accept: ()=> fetchApi("readPassword", cache, (val:Responce|string)=> {
                 if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
                 else useInfoToolbar("sucess", 'Пароль изменен', val);
             })
         });
     }
+
 
     return(
         <>
@@ -67,7 +69,6 @@ const BasePanel =()=> {
 
 export default function User() {
     const state = useHookstate(globalState.user);
-
     useDidMount(()=> useToolbar(<Menu />));
 
 

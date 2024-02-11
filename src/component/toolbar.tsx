@@ -10,9 +10,9 @@ const modelBar = [
 
 
 export default function ToolBar() {
-    const [state, setState] = React.useState();
+    const [state, setState] = React.useState<any>();
 
-    const hookView =(detail)=> {
+    const hookView =(detail: any)=> {
         if(detail) setState(
             <MegaMenu  
                 style={{width:"20%"}}
