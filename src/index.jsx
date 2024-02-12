@@ -19,7 +19,7 @@ const icon = {
 }
 
 
-const App =()=> {
+function App() {
     const [view, setView] = React.useState();
     const state = useHookstate(globalState);
     const toast = React.useRef(null);

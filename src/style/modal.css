@@ -1,0 +1,10 @@
+.modalContainer {
+    position: fixed;
+    z-index: 1;
+    top: 25%;
+    left: 50%;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}

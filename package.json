@@ -1,5 +1,5 @@
 {
-  "name": "rex",
+  "name": "crm",
   "version": "1.0.0",
   "private": "true",
   "keywords": [],
@@ -25,6 +25,7 @@
     "express": "4.18.2",
     "happy-dom": "13.2.0",
     "json-as-xlsx": "^2.5.6",
+    "lodash": "^4.17.21",
     "mongoose": "^7.0.2",
     "nodemon": "3.0.3",
     "pino": "8.17.2",
