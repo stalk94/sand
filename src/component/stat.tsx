@@ -12,7 +12,7 @@ import { useDidMount, useWillUnmount } from 'rooks';
 export default function Statistic() {
 
     useDidMount(()=> {
-        useToolbar();
+        useToolbar(undefined);
     });
 
     return(
