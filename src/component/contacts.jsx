@@ -167,7 +167,7 @@ export default function ContactData() {
     
     return(
         <div style={{width:"100%"}} className="datatable-templating-demo">
-            <div className="card">
+            <div>
                 <ConfirmPopup />
                 <DataTable 
                     rows={15}

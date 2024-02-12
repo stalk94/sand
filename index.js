@@ -141,9 +141,10 @@ app.post('/addCard', (req, res)=> {
     else {
         const user = db.get("users."+req.body.login);
         if(req.body.card){
-            user.todo.column.map((column)=> {
+            user.todo.column.map((column, index)=> {
                 if(column.id===req.body.card.parentId){
-                    req.body.card.id = column.cards.length + 1;
+                    req.body.card.id = new Date().getTime();
+                    req.body.card.index = user.todo.column[index].cards.length + 1;
                     column.cards.push(req.body.card);
                 }
             });

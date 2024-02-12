@@ -30,7 +30,7 @@
         "src/config.jsx": true,
         "src/logo.jsx": true,
         "**/nodemon.json": true,
-        ".gitignore": false,
+        ".gitignore": true,
         ".git": true
     },
     "explorerExclude.backup": {}

@@ -1,19 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import globalState from "../global.state";
 import { useHookstate } from '@hookstate/core';
 import { fetchApi, useInfoToolbar } from "../engineHooks";
-import { DndContext } from "@dnd-kit/core";
-import {SortableContext} from '@dnd-kit/sortable';
-
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
-import { Panel } from "primereact/panel";
-import { InputText } from "primereact/inputtext";
+import { DndContext, useDroppable, useDraggable, DragStartEvent, DragOverlay } from "@dnd-kit/core"
+import { SortableContext, useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 import "./../style/todo.scss";
 
-interface IList {
+interface IColumn {
     title: string;
     id: number;
     index: number;
@@ -21,6 +17,7 @@ interface IList {
 }
 
 interface ICard {
+    id: number;
     index: number;
     content: {
         title: string;
@@ -29,12 +26,10 @@ interface ICard {
 }
 
 export default function ToDo() {
-
-    fetchApi("getTodo", {}, (data) => {
-        globalState.user.todo.set(data);
-    });
-
+    
     const todo = useHookstate(globalState.user.todo);
+    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), todo.column);
+    const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
 
     const setServerData = (path, data) => {
         fetchApi(path, data, (val) => {
@@ -43,64 +38,74 @@ export default function ToDo() {
         });
     }
 
-    const drawBoard = (lists) => {
+    useEffect(() => {
+        fetchApi("getTodo", {}, (data) => {
+            console.log(data);
+            globalState.user.todo.set(data);
+        });
+    }, []);
+    
+    const drawColumns = (columns) => {
         return (
             <React.Fragment>
-                {lists.map((list: IList) => {
-                    return (
-                        <Panel headerTemplate={headerTemplate(list.title, list.id, setServerData)} key={list.id}>
-                            <SortableContext items={list.cards.map((card) => card.index)}>
-                                {list.cards && list.cards.map((card: ICard, id: number) => {
-                                    return (
-                                        <Card className="card" title={card.content.title} subTitle={card.content.text} key={id}/>
-                                    )
-                                })}
-                            </SortableContext>
-                            <CardForm listId={list.id} setData={setServerData} />
-                        </Panel>
-                    )
-                })}
+                <SortableContext items={columnIdes}>
+                    {columns.map((column: IColumn) => {
+                        return <Column column={column} setData={setServerData} key={column.id} />
+                    })}
+                </SortableContext>
             </React.Fragment>    
         )
     }
 
+    const onDragStart = (event: DragStartEvent) => {
+        const dragObj = event.active.data.current;
+        if (dragObj?.type === "Column") setActiveColumn(dragObj?.column)
+    }
+
     return (
-        <DndContext>
+        <DndContext onDragStart={onDragStart}>
             <div className="board">
-                {drawBoard(todo.column.get())}
-                <ListForm setData={setServerData} />
+                {drawColumns(todo.column.get())}
+                <ColumnForm setData={setServerData} />
             </div>
+            <DragOverlay>
+                {activeColumn && <Column column={activeColumn} setData={setServerData} />}
+            </DragOverlay>
         </DndContext>
     )
 }
 
-const ListForm = (props: {setData: Function}) => {
+//---------------------COLUMN_FORM--------------------------------
+
+const ColumnForm = (props: {setData: Function}) => {
     const {setData} = props;
-    const [isCreateListForm, setIsCreateListForm] = useState<boolean>(false);
-    const [listTitle, setListTitle] = useState<string>('');
+    const [isCreateColumnForm, setIsCreateColumnForm] = useState<boolean>(false);
+    const [columnTitle, setColumnTitle] = useState<string>('');
 
     return (
         <React.Fragment>
-            {isCreateListForm ?   
+            {isCreateColumnForm ?   
                 <form className="list-form">
-                    <InputText onChange={(e) => {setListTitle(e.target.value)}}/>
+                    <input onChange={(e) => {setColumnTitle(e.target.value)}}/>
                     <div className="form-buttons__container">
-                        <Button label="confirn" onClick={((e) => {
+                        <button onClick={((e) => {
                                 e.preventDefault();
-                                setData('addColumn', {column: {title: listTitle}});
-                                setIsCreateListForm(!isCreateListForm)
-                                setListTitle("");
+                                setData('addColumn', {column: {title: columnTitle}});
+                                setIsCreateColumnForm(!isCreateColumnForm)
+                                setColumnTitle("");
                             })
-                        }/>
-                        <Button label="cancel" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
+                        }>confirm</button>
+                        <button onClick={(() => setIsCreateColumnForm(!isCreateColumnForm))}>cancel</button>
                     </div>
                 </form>
                 :
-                <Button className="toggle-button" label="Create new list" onClick={((e) => setIsCreateListForm(!isCreateListForm))}/>
+                <button className="toggle-button" onClick={(() => setIsCreateColumnForm(!isCreateColumnForm))}>create new column</button>
             }
         </React.Fragment>
     )
 }
+
+//---------------------CARD_FORM--------------------------------
 
 const CardForm = (props: {listId: number, setData: Function}) => {
     const {listId, setData} = props;
@@ -111,9 +116,9 @@ const CardForm = (props: {listId: number, setData: Function}) => {
         <React.Fragment>
             {isCreateCardForm ? 
                 <form className="card-form">
-                    <InputText  onChange={(e) => {setCardTitle(e.target.value)}}/>
+                    <input  onChange={(e) => {setCardTitle(e.target.value)}}/>
                     <div className="form-buttons__container">
-                        <Button label="confirm" onClick={((e) => {
+                        <button onClick={((e) => {
                                 e.preventDefault();
                                 setData("addCard", {card: {
                                         parentId: listId,
@@ -124,22 +129,89 @@ const CardForm = (props: {listId: number, setData: Function}) => {
                                 setCardTitle("");
                                 
                             }
-                        )}/>
-                        <Button label="cancel" onClick={(() => setIsCreateCardForm(!isCreateCardForm))}/>
+                        )}>confirm</button>
+                        <button onClick={(() => setIsCreateCardForm(!isCreateCardForm))}>cancel</button>
                     </div>
                 </form>
                 : 
-                <Button label="Create new card" onClick={(() => setIsCreateCardForm(!isCreateCardForm))}/>
+                <button className="create-card__button" onClick={(() => setIsCreateCardForm(!isCreateCardForm))}>create new card</button>
             }
         </React.Fragment>
     )
 }
 
-const headerTemplate = (listTitle: string, listId: number, buttonOption: Function) => {
+//-------------------------CARD---------------------------------
+
+const Card = (props: {card: ICard}) => {
+    const {card} = props;
+
+    const {attributes, listeners, setNodeRef, transform} = useDraggable({
+        id: card.id,
+    });
+
+    const style = transform ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    } : undefined;
+
     return (
-        <div className="list__header-template">
-            <h2>{listTitle}</h2>
-            <button onClick={() => buttonOption("delColumn", {id: listId})}><i className="pi pi-times"></i></button>
+        <div 
+            className="card"
+            ref={setNodeRef} 
+            style={style} 
+            {...listeners} 
+            {...attributes}
+        >
+            <h3>{card.content.title}</h3>
         </div>
     );
+}
+
+// -------------------------COLUMN------------------------------------
+
+const Column = (props: {column: IColumn, setData: Function}) => {
+    const {column, setData} = props;
+
+    const { setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
+        id: column.id,
+        data: {
+            type: "Column",
+            column,
+        },
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition
+    };
+
+    if (isDragging) {
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className="column active"
+            ></div>
+        )
+    }
+
+    return (
+        <div 
+            className="column"
+            ref={setNodeRef} 
+            style={style}
+        >
+            <div 
+                className="column__header-template"
+                {...attributes}
+                {...listeners}
+            >
+                <h2>{column.title}</h2>
+                <button onClick={() => setData("delColumn", {id: column.id})}><i className="pi pi-times"></i></button>
+            </div>
+            {column.cards && column.cards.map((card) => {
+                return <Card key={card.id} card={card} />   
+            })}
+            <CardForm listId={column.id} setData={setData} />
+        </div>
+    )
 }
