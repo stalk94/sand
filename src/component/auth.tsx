@@ -1,22 +1,23 @@
 import React from 'react';
+import { Responce } from "../lib/type";
 import { InputText } from 'primereact/inputtext';
 import "../style/auth.css";
 import { Button } from 'primereact/button';
-import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { useInfoToolbar } from "../engineHooks";
 
 
+
+
 export default function Auth({onView}) {
-    const [login, setLogin] = React.useState();
-    const [pass, setPass] = React.useState();
+    const [login, setLogin] = React.useState<string>();
+    const [pass, setPass] = React.useState<string>();
 
 
     const serverFetch =()=> {
-        send('auth', {login:login,pass:pass}).then((val)=> {
+        send('auth', {login:login,pass:pass}).then((val:Responce)=> {
             if(val.error) useInfoToolbar("error", "Ошибка", val.error);
             else {
-                console.log(val)
                 globalState.set(val);
                 onView();
             }

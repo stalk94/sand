@@ -1,4 +1,5 @@
 import React from 'react';
+import { Contact } from "../lib/type";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -14,6 +15,7 @@ import { MdGroup } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
 
 
+type Action = 'readName'|'readCat'|'readTel'|'del'|'readPriorety';
 const priorety = {
     exc: <FaExclamation color="red"/>,
     crown: <FaCrown color="gold" />,
@@ -30,10 +32,11 @@ const dropDown = [
 ]
 
 
-const AddContact =({useCache})=> {
-    const [state, setState] = React.useState({});
 
-    const setVal =(ev)=> {
+const AddContact =({useCache})=> {
+    const [state, setState] = React.useState<Contact>({});
+
+    const setVal:React.ChangeEventHandler =(ev)=> {
         setState((old)=> {
             old[ev.target.name] = ev.target.value
             return old
@@ -57,17 +60,20 @@ const AddContact =({useCache})=> {
 
 export default function ContactData() {
     const [total, setTotal] = React.useState(globalState.contacts.length);
-    const [filter, setFilter] = React.useState(true);
+    const [filter, setFilter] = React.useState<boolean>(true);
     const [state, setState] = React.useState(globalState.contacts.get());
-
+    
     // важный хук, Отсылает данные на сервер и обновляет global state
-    const setServerData =(path, data)=> {
+    const setServerData =(path:string, data:object)=> {
         fetchApi(path, data, (val)=> {
             if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
-            else state.set(val);
+            else {
+                globalState.contacts.set(val);
+                setState(val);
+            };
         });
     }
-    const useAction =(action, detail, ev)=> {
+    const useAction =(action:Action, detail:Contact, ev:React.MouseEvent)=> {
         if(action==='readTel') {
             let cache = detail.telephone;
             confirmPopup({
@@ -110,7 +116,7 @@ export default function ContactData() {
         }
         else setServerData('delContact',{id:detail});
     }
-    const useAddcontact =(ev)=> {
+    const useAddcontact:React.MouseEventHandler =(ev)=> {
         let cache = {};
         confirmPopup({
             rejectLabel: 'отмена',
@@ -120,7 +126,7 @@ export default function ContactData() {
             accept: ()=> setServerData('addContact', cache)
         });
     }
-    const filtre =(type, detail)=> {
+    const filtre =(type:"author"|"category", detail:string)=> {
         if(type==="category"){
             setState((state)=> {
                 let newState = state.filter((elem)=> elem.category===detail);
@@ -162,7 +168,7 @@ export default function ContactData() {
             Всего контактов: {total}
         </var>
     );
-    
+ 
     
     return(
         <div style={{width:"100%"}} className="datatable-templating-demo">
@@ -226,7 +232,7 @@ export default function ContactData() {
                                 <Button 
                                     className="p-button-danger" 
                                     icon="pi pi-times-circle" 
-                                    onClick={()=> useAction("del", rowData.id)}
+                                    onClick={(ev)=> useAction("del", rowData.id, ev)}
                                 />
                             </div>
                         )}
