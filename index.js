@@ -6,6 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const db = require("quick.db");
 const { authVerifu, authVerifuToken } = require("./server/engine");
+require("./server/stat.js");
 
 
 const prod = process.env.production;
@@ -22,8 +23,16 @@ app.get("/", (req, res)=> {
 });
 app.post('/auth', (req, res)=> {
     const userData = authVerifu(req.body.login, req.body.pass);
+    
     if(userData.error) res.send(userData);
     else {
+        const users = [];
+        Object.values(db.get("users")).forEach((user)=> {
+            delete user.password;
+            delete user.token;
+            users.push(user);
+        });
+
         res.send({
             user: userData,
             contacts: db.get("contacts"),
@@ -31,7 +40,7 @@ app.post('/auth', (req, res)=> {
             stat: db.get("stat"),
             cooper: db.get("cooper"),
             logo: db.get("logo"),
-            users: Object.values(db.get("users"))
+            users: users
         });
     }
 });
@@ -53,7 +62,7 @@ app.post('/readContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
 
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
         if(cont[req.body.id]){
             if(req.body.telephone) cont[req.body.id].telephone = req.body.telephone;
@@ -69,13 +78,14 @@ app.post('/addContact', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     const getMonth =()=> {
         const month = new Date().getMonth();
-        if(month===0) return `01`;
-        else return month;
+        if(month+1 < 9) return `0${month+1}`;
+        else return month+1;
     }
     
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
         if(req.body.name){
+            delete req.body.token;
             req.body.id = cont.length;
             req.body.author = req.body.login;
             req.body.timeshtamp = new Date().getDate()+"."+getMonth()+"."+new Date().getFullYear();
@@ -89,7 +99,7 @@ app.post('/delContact', (req, res)=> {
     const cont = db.get("contacts");
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
-    if(verifu.error) res.send(verifu);
+    if(verifu.error && prod!=="false") res.send(verifu);
     else {
         cont.forEach((elem, index)=> {
             if(elem.id===req.body.id) cont.splice(index, 1);
@@ -189,9 +199,31 @@ app.post('/delEvent', (req, res)=> {
         res.send({sucess: "Задание удалено"});
     }
 });
+app.post('/addLid', (req, res)=> {
+    const lids = db.get("lids");
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    const getMonth =()=> {
+        const month = new Date().getMonth();
+        if(month+1 < 9) return `0${month+1}`;
+        else return month+1;
+    }
+    
+    if(verifu.error) res.send(verifu);
+    else {
+        if(req.body.name){
+            delete req.body.token;
+            req.body.id = lids.length;
+            req.body.author = req.body.login;
+            req.body.timeshtamp = new Date().getDate()+"."+getMonth()+"."+new Date().getFullYear();
+            lids.push(req.body);
+            db.set("lids", lids);
+        }
+        res.send(lids);
+    }
+});
 
 
-
+//db.set("contacts", []);
 //db.set("users.test.todo", {column:[]});
 app.use('/', express.static(path.join(__dirname, '/dist')));
 server.listen(3000, ()=> console.log("start 3000"));

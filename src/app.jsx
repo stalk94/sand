@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import ContactData from "./component/contacts";
 import User from "./component/user";
 import ToolBar from "./component/toolbar";
+import Stat from "./component/stat";
 import { useDidMount } from 'rooks';
 import { encodeImageFileAsURL, fetchApi, useInfoToolbar } from "./engineHooks";
 import ToDo from './component/todo';
@@ -37,13 +38,13 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<Calendar />);
+        setView(<Stat/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
             else if(target==='Планировщик') setView(<ToDo />);
             else if(target==="Календарь") setView(<Calendar />);
-            else if(target==="Статистика") setView();
+            else if(target==="Статистика") setView(<Stat/>);
             else if(target==="Лиды") setView();
             else setView();
         });

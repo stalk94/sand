@@ -54,3 +54,13 @@ export type Day = {
     weeknumber: number
     dayname: string
 }
+
+export interface Lid {
+    id: number
+    timeshtamp: string
+    author: string
+}
+
+export interface Stat {
+    
+}
