@@ -13,13 +13,7 @@ export default function ToolBar() {
     const [state, setState] = React.useState<any>();
 
     const hookView =(detail: any)=> {
-        if(detail) setState(
-            <MegaMenu  
-                style={{width:"20%"}}
-                orientation="vertical"
-                start={detail}
-            />
-        );
+        if(detail) setState(detail);
         else setState("");
     }
     useDidMount(()=> EVENT.on("toolbar", hookView));

@@ -10,7 +10,8 @@ export interface User {
     login: string
     token: string
     id: number
-    avatar: string|undefined,
+    avatar: string|undefined
+    color: string
     permision: 0|1|2
     todo: {
         column: Array<ColumnTodo>
@@ -59,8 +60,6 @@ export interface Lid {
     id: number
     timeshtamp: string
     author: string
-}
-
-export interface Stat {
-    
+    status: string
+    price: number
 }

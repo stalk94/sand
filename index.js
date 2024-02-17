@@ -5,8 +5,7 @@ const express = require('express');
 const cors = require("cors");
 const path = require("path");
 const db = require("quick.db");
-const { authVerifu, authVerifuToken } = require("./server/engine");
-require("./server/stat.js");
+const { authVerifu, authVerifuToken, createUser, sendMail } = require("./server/engine");
 
 
 const prod = process.env.production;
@@ -221,9 +220,37 @@ app.post('/addLid', (req, res)=> {
         res.send(lids);
     }
 });
+app.post('/addUser', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const create = createUser(req.body.userLogin, req.body.password, req.body.permision, req.body.login);
+        if(!create.error){
+            const users = [];
+            Object.values(db.get("users")).forEach((user)=> {
+                delete user.password;
+                delete user.token;
+                users.push(user);
+            });
+            res.send(users);
+        }
+        else res.send(create);
+    }
+});
+app.post('/sendMail', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const create = sendMail(req.body.userLogin, req.body.msg, req.body.login);
+        if(!create.error) res.send({});
+        else res.send(create);
+    }
+});
 
 
-//db.set("contacts", []);
+
 //db.set("users.test.todo", {column:[]});
 app.use('/', express.static(path.join(__dirname, '/dist')));
 server.listen(3000, ()=> console.log("start 3000"));

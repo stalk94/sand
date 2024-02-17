@@ -179,6 +179,7 @@ export default function ContactData() {
                     value={state} 
                     header={heaader}
                     footer={footer}
+                    paginator
                     responsiveLayout="scroll"
                 >
                     <Column header="name" body={(rowData)=> 

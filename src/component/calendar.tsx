@@ -25,7 +25,7 @@ const testEvent = [{
 
 
 
-const DateCalendarPicker =({curentDate, useDate})=> {
+export const DateCalendarPicker =({curentDate, useDate})=> {
     const month = ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
     const [arrYear, setArrYear] = React.useState([]);
 
@@ -178,7 +178,7 @@ export default function BaseContainer() {
             }
         ];
 
-        useToolbar(<Menu model={items}/>);
+        useToolbar(<Menu style={{width:"20%"}} model={items}/>);
     });
 
 
