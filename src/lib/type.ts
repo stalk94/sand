@@ -6,6 +6,13 @@ type ColumnTodo = {
         content: object
     }>
 }
+export type Massage = {
+    id: number
+    text: string
+    author: string
+    timeshtamp: string
+    view: boolean
+}
 export interface User {
     login: string
     token: string
@@ -13,6 +20,7 @@ export interface User {
     avatar: string|undefined
     color: string
     permision: 0|1|2
+    massage: Array<Massage>
     todo: {
         column: Array<ColumnTodo>
     }
@@ -61,5 +69,18 @@ export interface Lid {
     timeshtamp: string
     author: string
     status: string
+    price: number
+}
+
+export type DataRenderContact = {
+    name: string
+    count: number
+}
+
+export type DataRenderLid = {
+    name: string
+    count: number
+    close: number
+    filed: number
     price: number
 }

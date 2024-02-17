@@ -65,7 +65,8 @@ exports.sendMail =(login, msg, author)=> {
 
     if(msg.length<3 && msg.length>700) return {error:"masssage min 3 simbol max 700 simbol"};
     if(user){
-        user.massage.push({
+        user.massage.unshift({
+            id: user.massage.length + 1,
             text: msg,
             author: author,
             timeshtamp: new Date().getDate()+"."+getMonth()+"."+new Date().getFullYear()+" "+getTime(),

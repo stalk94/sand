@@ -175,3 +175,21 @@ export function getFilterLids(time:string|undefined, userLogin:string|undefined)
     }
     else return lids;
 }
+
+
+export function getUseTime(date:Array<number|string>) {
+    const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+    
+    let curmonth = '.0';
+    month.forEach((elem, index)=> {
+        if(elem===date[0]){
+            if(index < 10) curmonth = `.0${index}`;
+            else curmonth = '.'+index.toString();
+        }
+    });
+
+    let time = "";
+    if(date[0]!=="не выбрано") time = curmonth;
+    if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
+    return time;
+}

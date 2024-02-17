@@ -11,7 +11,7 @@ const globalState = hookstate({
         online: true,
         avatar: undefined,
         massage: [{
-            text: "test",
+            text: `DataTable responsive layout can be achieved in two ways; first approach `,
             author: "test",
             timeshtamp: new Date().getDate()+"."+new Date().getMonth()+"."+new Date().getFullYear(),
             view: false
@@ -76,7 +76,14 @@ const globalState = hookstate({
             author: "admin",
             status: "close",
             price: 200
-    }],
+        },{
+            id: 2,
+            timeshtamp: '24.07.2023',
+            author: "admin",
+            status: "close",
+            price: 200
+        }
+],
     calendar: {},
     users: [{
             login: "test",

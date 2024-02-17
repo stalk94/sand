@@ -1,4 +1,3 @@
-//require("./server/dom");
 const dotenv = require('dotenv').config();
 const http = require('http');
 const express = require('express');
@@ -246,6 +245,20 @@ app.post('/sendMail', (req, res)=> {
         const create = sendMail(req.body.userLogin, req.body.msg, req.body.login);
         if(!create.error) res.send({});
         else res.send(create);
+    }
+});
+app.post('/readStatusMail', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const searchIndex = verifu.massage.findIndex((msg)=> msg.id===req.body.msg.id);
+        if(searchIndex!==-1){
+            verifu.massage[searchIndex].view = true;
+            db.set(`users.${req.body.login}.massage`, verifu.massage);
+            res.send(db.get(`users.${req.body.login}.massage`));
+        }
+        else res.send({error:'error index massage'});
     }
 });
 

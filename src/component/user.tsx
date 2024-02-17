@@ -1,6 +1,6 @@
 import "../style/user.css";
-import { Responce } from "../lib/type";
 import React from 'react';
+import { Responce, Massage } from "../lib/type";
 import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { Card } from 'primereact/card';
@@ -11,12 +11,35 @@ import { Column } from 'primereact/column';
 import { Fieldset } from 'primereact/fieldset';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
+import { ScrollPanel } from 'primereact/scrollpanel';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
+import { FaRegEnvelope, FaRegEnvelopeOpen } from "react-icons/fa";
 import { useToolbar, fetchApi, useInfoToolbar } from "../engineHooks";
 import { AddUser, SendMail } from "./modal.user";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
  
 
+const LabelMassage =()=> {
+    let count = 0;
+    const [view, setView] = React.useState<JSX.Element>();
+    React.useEffect(()=> {
+        const massage = globalState.user.massage.get();
+        massage.forEach((msg)=> !msg.view && count++);
+        if(count > 0) setView(
+            <var style={{color:"green",marginLeft:"4px"}}>
+                +{count}
+            </var>
+        );
+    }, []);
+
+
+    return(
+        <div>
+            Почта 
+            {view}
+        </div>
+    )
+}
 const BasePanel =()=> {
     const state = useHookstate(globalState.user);
     
@@ -65,28 +88,25 @@ const BasePanel =()=> {
     );
 }
 const UserSettings =({userData})=> {
-    const [modal, setModal] = React.useState();
+    const [modal, setModal] = React.useState<"edit"|"post"|"ban"|undefined>();
     const state = useHookstate(globalState.user);
 
-    const useClick =(type:"edit"|"post"|"ban")=> {
-        setModal(type);
-    }
     const glavAdmin =()=> {
         return(
             <>
                 <Button className="p-button-outlined p-button-warning"
                     icon="pi pi-user-edit"
-                    onClick={()=> useClick("edit")}
+                    onClick={()=> setModal("edit")}
                 />
                 <Button className="p-button-outlined p-button-warning"
                     style={{marginLeft:"2%"}}
                     icon="pi pi-envelope"
-                    onClick={()=> useClick("post")}
+                    onClick={()=> setModal("post")}
                 />
                 <Button className="p-button-outlined p-button-danger"
                     style={{marginLeft:"2%"}}
                     icon="pi pi-times"
-                    onClick={()=> useClick("ban")}
+                    onClick={()=> setModal("ban")}
                 />
             </>
         );
@@ -96,12 +116,12 @@ const UserSettings =({userData})=> {
             <>
                 <Button className="p-button-outlined p-button-warning"
                     icon="pi pi-user-edit"
-                    onClick={()=> useClick("edit")}
+                    onClick={()=> setModal("edit")}
                 />
                 <Button className="p-button-outlined p-button-warning"
                     style={{marginLeft:"2%"}}
                     icon="pi pi-envelope"
-                    onClick={()=> useClick("post")}
+                    onClick={()=> setModal("post")}
                 />
             </>
         );
@@ -112,7 +132,7 @@ const UserSettings =({userData})=> {
         else return <Button className="p-button-outlined p-button-warning"
             style={{marginLeft:"2%"}}
             icon="pi pi-envelope"
-            onClick={()=> useClick("post")}
+            onClick={()=> setModal("post")}
         />
     }
 
@@ -127,17 +147,21 @@ const UserSettings =({userData})=> {
 
 
 export default function User() {
-    const [view, setView] = React.useState();
-    const [modal, setModal] = React.useState();
-    const [curent, setCurent] = React.useState('post');
+    const [view, setView] = React.useState<JSX.Element>();
+    const [modal, setModal] = React.useState<string|undefined>();
+    const [curent, setCurent] = React.useState<'base'|'post'|'users'>('base');
     const users = useHookstate(globalState.users);
     const state = useHookstate(globalState.user);
 
+    const setMassageStatus =(massage:Massage)=> {
+        fetchApi("readStatusMail", {msg:massage}, (res)=> {
+            if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
+            else state.massage.set(res);
+        });
+    }
     const header =()=> {
         if(state.permision.get()===0) return(
-            <>
-                <Button onClick={()=> setModal("addUser")} className="p-button-success" icon="pi pi-plus"/>
-            </>
+            <Button onClick={()=> setModal("addUser")} className="p-button-success" icon="pi pi-plus"/>
         );
     }
     useDidMount(()=> {
@@ -146,7 +170,7 @@ export default function User() {
                 icon: 'pi pi-user', 
                 command:()=> setCurent('base')
             },{   
-                label: 'Почта ', 
+                label: <LabelMassage/>, 
                 icon: 'pi pi-envelope', 
                 command:()=> setCurent('post')
             },{   
@@ -185,29 +209,36 @@ export default function User() {
                 />
                 <Column field="login" header="name"/>
                 <Column header="permision" body={(data)=> permision[data.permision]}/>
-                <Column body={(data)=> <div style={{color:data.online?"green":"red"}}>{data.online?"online":"ofline"}</div>} header="online"/>
+                <Column body={(data)=> <div style={{color:data.online?"green":"red"}}>{data.online?"online":"offline"}</div>} header="online"/>
                 <Column body={(data)=> <UserSettings userData={data}/>} />
             </DataTable>
             </>
         );
         else if(curent==="post") setView(
-            <div className="msgContainer">
-                {state.massage.get().map((data, index)=> 
-                    <div key={index} className="msg">
-                        <div className="msgTitle">
-                            <div>
-                                {data.author}
-                            </div>
-                            <div>
-                                {data.timeshtamp}
-                            </div>
-                        </div>
-                        <div>
-                            {data.text}
-                        </div>
-                    </div>
-                )}
-            </div>
+            <DataTable paginator
+                rows={15}
+                style={{width:"80%"}}
+                value={state.massage.get()} 
+                onSelectionChange={(ev)=> setMassageStatus(ev.value)}
+                selectionMode={'single'} 
+            >
+                <Column field="timeshtamp" header='время'/>
+                <Column field="author" header='от'/>
+                <Column header='сообщение'
+                    body={(data)=>
+                        <ScrollPanel style={{maxHeight:'60px'}}>
+                            <p style={{color:"#f8c987"}}>
+                                {data.text}
+                            </p>
+                        </ScrollPanel>
+                    } 
+                />
+                <Column body={(data)=> data.view
+                        ? <FaRegEnvelopeOpen color="grey" size='1.5em'/>
+                        : <FaRegEnvelope color="orange" size='1.5em'/>
+                    }
+                />
+            </DataTable>
         );
     }, [curent, modal]);
 

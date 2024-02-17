@@ -1,14 +1,14 @@
 import React from 'react';
 import "../style/stat.css";
-import { Lid } from "../lib/type";
+import { Lid, DataRenderContact, DataRenderLid } from "../lib/type";
 import globalState from "../global.state";
 import { Dropdown } from 'primereact/dropdown';
 import { DataTable } from 'primereact/datatable';
-import { ToggleButton } from 'primereact/togglebutton';
+import { ToggleButton, ToggleButtonChangeEvent } from 'primereact/togglebutton';
 import { Column } from 'primereact/column';
 import { Menu } from 'primereact/menu';
 import { SelectButton } from 'primereact/selectbutton';
-import { useInfoToolbar, fetchApi, useToolbar, getFilterContact, getFilterLids } from "../engineHooks";
+import { useToolbar, getFilterContact, getFilterLids, getUseTime } from "../engineHooks";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { useDidMount, useWillUnmount } from 'rooks';
@@ -56,7 +56,7 @@ const HeadBlock =({date,useDate})=> {
     );
 }
 const Checker =({data, value, useSetCurUser})=> {
-    const [checked, setChek] = React.useState(value);
+    const [checked, setChek] = React.useState<boolean>(value);
 
     return(
         <ToggleButton 
@@ -64,7 +64,7 @@ const Checker =({data, value, useSetCurUser})=> {
             offLabel="+"
             checked={checked}
             onChange={(e)=> {
-                if(checked===true) setChek(false);
+                if(checked) setChek(false);
                 else setChek(true);
                 useSetCurUser(e, data);
             }} 
@@ -72,20 +72,19 @@ const Checker =({data, value, useSetCurUser})=> {
     )
 }
 const ListStatContact =({data, useCurUser, curentUser})=> {
-    const [render, setRender] = React.useState([]);
+    const [render, setRender] = React.useState<Array<DataRenderContact>>([]);
 
-    const useSetCurUser =(elem, data)=> {
+    const useSetCurUser =(elem:ToggleButtonChangeEvent, data:DataRenderContact)=> {
         if(elem.value===false){
-            curentUser.forEach((name, index)=> {
+            curentUser.forEach((name:string, index:number)=> {
                 if(name===data.name) curentUser.splice(index, 1);
             });
-            console.log(curentUser)
             useCurUser(curentUser);
         }
         else useCurUser([...curentUser, data.name]);
     }
-    const useValue =(rowData)=> {
-        if(curentUser.find((elem)=> elem===rowData.name)) return true;
+    const useValue =(rowData:DataRenderContact)=> {
+        if(curentUser.find((elem: string)=> elem===rowData.name)) return true;
         else return false;
     }
     React.useEffect(()=> {
@@ -103,6 +102,7 @@ const ListStatContact =({data, useCurUser, curentUser})=> {
         setRender(result);
     }, [data, curentUser]);
     
+    
     return(
         <DataTable style={{width:"50%",marginLeft:"2%"}} value={render} rows={10} paginator>
             <Column field="name" header="name"></Column>
@@ -115,20 +115,19 @@ const ListStatContact =({data, useCurUser, curentUser})=> {
     );
 }
 const ListStatLids =({data, useCurUser, curentUser})=> {
-    const [render, setRender] = React.useState([]);
+    const [render, setRender] = React.useState<Array<DataRenderLid>>([]);
 
-    const useSetCurUser =(elem, data)=> {
+    const useSetCurUser =(elem:ToggleButtonChangeEvent, data:DataRenderLid)=> {
         if(elem.value===false){
             curentUser.forEach((name, index)=> {
                 if(name===data.name) curentUser.splice(index, 1);
             });
-            console.log(curentUser)
             useCurUser(curentUser);
         }
         else useCurUser([...curentUser, data.name]);
     }
-    const useValue =(rowData)=> {
-        if(curentUser.find((elem)=> elem===rowData.name)) return true;
+    const useValue =(rowData:DataRenderLid)=> {
+        if(curentUser.find((elem: string)=> elem===rowData.name)) return true;
         else return false;
     }
     React.useEffect(()=> {
@@ -160,6 +159,7 @@ const ListStatLids =({data, useCurUser, curentUser})=> {
         setRender(result);
     }, [data, curentUser]);
     
+    
     return(
         <DataTable style={{marginLeft:"2%"}} value={render} rows={10} paginator>
             <Column field="name" header="author"/>
@@ -178,30 +178,16 @@ const ListStatLids =({data, useCurUser, curentUser})=> {
 const StatContact =({date, curentUser, useCurUser})=> {
     const [curView, setView] = React.useState();
     
-    const useTime =()=> {
-        let curmonth = '0';
-        month.forEach((elem, index)=> {
-            if(elem===date[0]){
-                if(index < 10) curmonth = `0${index}`;
-                else curmonth = index.toString();
-            }
-        });
-
-        let time = "";
-        if(date[0]!=="не выбрано") time = curmonth;
-        if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
-        return time;
-    }
     const useFilter =()=> {
         if(curentUser.length > 0) {
             let result = [];
             curentUser.forEach((name)=> {
-                result = [...result, ...getFilterContact(useTime(), name)];
+                result = [...result, ...getFilterContact(getUseTime(date), name)];
             }); 
             
             return result;
         }
-        else return getFilterContact(useTime());
+        else return getFilterContact(getUseTime(date), undefined);
     }
     React.useEffect(()=> {
         const users = {};
@@ -224,7 +210,7 @@ const StatContact =({date, curentUser, useCurUser})=> {
                <div style={{width:"40%"}}>
                     <Pie data={dataRender}/>
                 </div>
-               <ListStatContact data={getFilterContact(useTime())} curentUser={curentUser} useCurUser={useCurUser}/>
+               <ListStatContact data={getFilterContact(getUseTime(date))} curentUser={curentUser} useCurUser={useCurUser}/>
             </div>
         );
     }, [date, curentUser]);
@@ -241,30 +227,16 @@ const StatLids =({date, curentUser, useCurUser})=> {
     const [curCategory, setCategory] = React.useState('all');
     const [curView, setView] = React.useState();
 
-    const useTime =()=> {
-        let curmonth = '0';
-        month.forEach((elem, index)=> {
-            if(elem===date[0]){
-                if(index < 10) curmonth = `0${index}`;
-                else curmonth = index.toString();
-            }
-        });
-
-        let time = "";
-        if(date[0]!=="не выбрано") time = curmonth;
-        if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
-        return time;
-    }
     const useFilter =()=> {
         if(curentUser.length > 0) {
             let result = [];
             curentUser.forEach((name)=> {
-                result = [...result, ...getFilterLids(useTime(), name)];
+                result = [...result, ...getFilterLids(getUseTime(date), name)];
             }); 
             
             return result;
         }
-        else return getFilterLids(useTime());
+        else return getFilterLids(getUseTime(date), undefined);
     }
     React.useEffect(()=> {
         const users = {};
@@ -315,7 +287,7 @@ const StatLids =({date, curentUser, useCurUser})=> {
                     />
                     <Pie data={dataRender}/>
                 </div>
-               <ListStatLids data={getFilterLids(useTime())} curentUser={curentUser} useCurUser={useCurUser}/>
+               <ListStatLids data={getFilterLids(getUseTime(date))} curentUser={curentUser} useCurUser={useCurUser}/>
             </div>
         );
     }, [date, curentUser, curCategory]);
@@ -360,10 +332,10 @@ const StatAll =({date})=> {
 
 
 export default function Statistic() {
-    const [date, setDate]= React.useState(["не выбрано", "не выбрано"]);
-    const [cur, setCur] = React.useState("all");
-    const [curentUser, setCurUser] = React.useState([]);
-    const [curView, setView] = React.useState();        
+    const [date, setDate]= React.useState(['не выбрано', 'не выбрано']);
+    const [cur, setCur] = React.useState<'all'|'lids'|'contact'>("all");
+    const [curentUser, setCurUser] = React.useState<Array<string>>([]);
+    const [curView, setView] = React.useState<JSX.Element>();        
 
    
     useDidMount(()=> {
