@@ -231,7 +231,7 @@ export default function ContactData() {
                         body={(rowData)=> (
                             <div style={{marginLeft:"35%"}}>
                                 <Button 
-                                    className="p-button-danger" 
+                                    className="p-button-outlined p-button-danger" 
                                     icon="pi pi-times-circle" 
                                     onClick={(ev)=> useAction("del", rowData.id, ev)}
                                 />

@@ -316,8 +316,8 @@ const StatAll =({date})=> {
         return time;
     }
     React.useEffect(()=> { 
-        const contacts = getFilterContact(useTime());
-        const lids = getFilterLids(useTime());
+        const contacts = getFilterContact(getUseTime(date));
+        const lids = getFilterLids(getUseTime(date));
 
 
     }, [date]);
