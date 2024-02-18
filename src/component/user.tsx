@@ -4,7 +4,6 @@ import { Responce, Massage } from "../lib/type";
 import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { Card } from 'primereact/card';
-import { useDidMount } from 'rooks';
 import { Menu } from 'primereact/menu';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -14,29 +13,26 @@ import { Password } from 'primereact/password';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { FaRegEnvelope, FaRegEnvelopeOpen } from "react-icons/fa";
-import { useToolbar, fetchApi, useInfoToolbar } from "../engineHooks";
+import { useToolbar, fetchApi, useInfoToolbar, encodeImageFileAsURL } from "../engineHooks";
 import { AddUser, SendMail } from "./modal.user";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
  
 
 const LabelMassage =()=> {
-    let count = 0;
-    const [view, setView] = React.useState<JSX.Element>();
-    React.useEffect(()=> {
-        const massage = globalState.user.massage.get();
-        massage.forEach((msg)=> !msg.view && count++);
-        if(count > 0) setView(
-            <var style={{color:"green",marginLeft:"4px"}}>
-                +{count}
-            </var>
-        );
-    }, []);
-
+    const massage = useHookstate(globalState.user.massage);
 
     return(
         <div>
             Почта 
-            {view}
+            {(()=> {
+                const cache = massage.get().filter((msg)=> !msg.view && msg);
+        
+                if(cache.length > 0) return(
+                    <var style={{color:"green",marginLeft:"4px"}}>
+                        +{cache.length}
+                    </var>
+                );
+            })()}
         </div>
     )
 }
@@ -66,7 +62,7 @@ const BasePanel =()=> {
         <>
             <ConfirmPopup />
             <Fieldset legend="Данные">
-                <div >
+                <div>
                     id: { state.id.get() }
                 </div>
                 <div>
@@ -155,8 +151,21 @@ export default function User() {
 
     const setMassageStatus =(massage:Massage)=> {
         fetchApi("readStatusMail", {msg:massage}, (res)=> {
+            console.log(res)
             if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
             else state.massage.set(res);
+        });
+    }
+    const loadAvatar =(data:string)=> {
+        const req = {data:data, format:'png'};
+        if(data.includes('image/jpeg')) req.format = 'jpg';
+        else if(data.includes('image/png')) req.format = 'png';
+        
+        
+        fetchApi("loadAvatar", req, (res)=> {
+            console.log(res)
+            if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
+            else state.avatar.set(res.url);
         });
     }
     const header =()=> {
@@ -164,13 +173,13 @@ export default function User() {
             <Button onClick={()=> setModal("addUser")} className="p-button-success" icon="pi pi-plus"/>
         );
     }
-    useDidMount(()=> {
+    React.useEffect(()=> {
         const items = [{   
                 label: 'Анкета', 
                 icon: 'pi pi-user', 
                 command:()=> setCurent('base')
             },{   
-                label: <LabelMassage/>, 
+                label: <LabelMassage />, 
                 icon: 'pi pi-envelope', 
                 command:()=> setCurent('post')
             },{   
@@ -179,10 +188,8 @@ export default function User() {
                 command:()=> setCurent('users')
             }
         ];
-
         useToolbar(<Menu style={{width:"20%"}} model={items}/>);
-    });
-    React.useEffect(()=> {
+
         if(curent==="base") setView(
             <Card style={{width:"100%"}}
                 header={
@@ -241,7 +248,7 @@ export default function User() {
             </DataTable>
         );
     }, [curent, modal]);
-
+    
 
     return(<>{ view }</>);
 }

@@ -193,3 +193,12 @@ export function getUseTime(date:Array<number|string>) {
     if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
     return time;
 }
+
+
+export function getMemory() {
+    const formatMemoryUsage =(data)=> `${Math.round(data / 1024 / 1024 * 100) / 100} MB`;
+    console.log(`
+        totalHeap: ${formatMemoryUsage(window.performance.memory.totalJSHeapSize)}
+        usedHeap: ${formatMemoryUsage(window.performance.memory.usedJSHeapSize)}
+    `)
+}

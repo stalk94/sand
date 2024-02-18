@@ -8,11 +8,9 @@ import User from "./component/user";
 import ToolBar from "./component/toolbar";
 import Stat from "./component/stat";
 import { useDidMount } from 'rooks';
-import { encodeImageFileAsURL, fetchApi, useInfoToolbar } from "./engineHooks";
+import { encodeImageFileAsURL, fetchApi, useInfoToolbar, getMemory } from "./engineHooks";
 import ToDo from './component/todo';
 import Calendar from "./component/calendar";
-
-
 
 
 const navigation = [
@@ -24,11 +22,11 @@ const navigation = [
 ];
 
 
-
 export default function BaseContainer() {
     const state = useHookstate(globalState);
     const [view, setView] = React.useState();
     
+    getMemory();
     const useLoadLogo =()=> {
         if(state.user.permision.get()===0) encodeImageFileAsURL((result)=> {
             fetchApi("readBaseCrmData", {logo: result}, (responce)=> {

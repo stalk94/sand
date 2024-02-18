@@ -1,40 +1,23 @@
-const db = require("quick.db");
+const { db } = require("./engine");
 
 
-db.set("lids", [])
-db.set("calendar", {})
-db.set("stat", {})
-db.set("calendar", {})
-
-
-db.set("contacts", [{
-    id: 0,
-    name: "test",
-    timeshtamp: '24.07.2023',
-    telephone: "+384940932343",
-    category: "важные",
-    author: "admin",
-    data: {}
-}]);
-db.set("users", {
-    "test": {
-        login: "test",
-        password: "test",
+db.set('contacts', []);
+db.set('users', {
+    admin: {
+        login: "admin",
+        token: "",
+        password: 'admin',
         id: 0,
-        theme: "dark",
+        online: true,
         avatar: undefined,
+        massage: [],
         permision: 0,
+        color: 'red',
         todo: {
-            column: [{
-                id: 0,
-                index: 0,
-                cards: [{
-                    index: 0,
-                    content: {}
-                }]
-            }]
+            column: []
         }
     }
 });
-db.set("cooper", "newCompany");
-db.set("logo", undefined);
+db.set('lids', []);
+db.set('calendar', {});
+db.set('cooper', 'new company');

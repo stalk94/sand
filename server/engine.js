@@ -1,5 +1,6 @@
-const db = require("quick.db");
 const CryptoJS = require('crypto-js');
+const { QuickDB } = require("quick.db");
+const db = new QuickDB();
 
 
 const getMonth =()=> {
@@ -12,9 +13,9 @@ const getTime =()=> {
 }
 
 
-exports.authVerifuToken =(login, token)=> {
+exports.authVerifuToken =async(login, token)=> {
     if(login && token){
-        let user = db.get("users."+login);
+        let user = await db.get("users."+login);
         delete user.password;
 
         if(user && user.token && user.token===token) return user;
@@ -22,12 +23,12 @@ exports.authVerifuToken =(login, token)=> {
     }
     else return {error: "В доступе отказано"}
 }
-exports.authVerifu =(login, password)=> {
+exports.authVerifu =async(login, password)=> {
     if(login && password){
-        let user = db.get("users."+login);
+        let user = await db.get("users."+login);
         if(user && user.password===password) {
             user.token = CryptoJS.AES.encrypt(new Date().getTime().toString(), 'test').toString();
-            db.set("users."+login, user);
+            await db.set("users."+login, user);
             delete user.password;
             return user;
         }
@@ -35,14 +36,17 @@ exports.authVerifu =(login, password)=> {
     }
     else return {error: "В доступе отказано invalid login or password"}
 }
-exports.createUser =(login, pass, permision, author)=> {
-    if(db.get("users."+author).permision!==0) return {error:"not permision"};
+exports.createUser =async(login, pass, permision, author)=> {
+    const user = await db.get("users."+author);
+
+    if(user.permision!==0) return {error:"not permision"};
     if(pass.length < 6) return {error:"password minimum 6 simbol"};
     if(login.length < 5) return {error:"login minimum 5 simbol"};
     else {
-        if(db.get("users."+login)) return {error:"пользователь с таким логином уже зарегестрирован"};
+        const newUser = await db.get("users."+login);
+        if(newUser) return {error:"пользователь с таким логином уже зарегестрирован"};
         else {
-            db.set("users."+login, {
+            await db.set("users."+login, {
                 login: login,
                 password: pass,
                 token: "",
@@ -60,8 +64,8 @@ exports.createUser =(login, pass, permision, author)=> {
         }
     }
 }
-exports.sendMail =(login, msg, author)=> {
-    const user = db.get("users."+login);
+exports.sendMail =async(login, msg, author)=> {
+    const user = await db.get("users."+login);
 
     if(msg.length<3 && msg.length>700) return {error:"masssage min 3 simbol max 700 simbol"};
     if(user){
@@ -72,8 +76,24 @@ exports.sendMail =(login, msg, author)=> {
             timeshtamp: new Date().getDate()+"."+getMonth()+"."+new Date().getFullYear()+" "+getTime(),
             view: false
         });
-        db.set("users."+login, user);
+        await db.set("users."+login, user);
         return {}
     }
     else return {error:"user not find"}
 }
+
+exports.useMemory =()=> {
+    const formatMemoryUsage =(data)=> `${Math.round(data / 1024 / 1024 * 100) / 100} MB`;
+    const memoryData = process.memoryUsage();
+
+    const memoryUsage = {
+        rss: `${formatMemoryUsage(memoryData.rss)}`,
+        heapTotal: `${formatMemoryUsage(memoryData.heapTotal)}`,
+        heapUsed: `${formatMemoryUsage(memoryData.heapUsed)}`,
+        external: `${formatMemoryUsage(memoryData.external)}`,
+    };
+    console.log(memoryUsage);
+}
+
+
+exports.db = db;

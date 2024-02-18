@@ -13,8 +13,6 @@
         "package-lock.json": true,
         "node_modules": true,
         "src/fonts": true,
-        "src/images": true,
-        "src/img": true,
         "src\\component/icon.jsx": true,
         "src\\component/move.jsx": true,
         "src\\component/figure.jsx": true,

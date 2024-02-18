@@ -12,6 +12,8 @@ import globalState from "./global.state";
 import { useDidMount } from 'rooks';
 import { Toast } from 'primereact/toast';
 
+
+
 const icon = {
     sucess: "✔️",
     error: "🛑",
@@ -38,7 +40,7 @@ function App() {
         if(state.user.get() && state.user.login.get()) setView(<Base/>);
         else setView(<Auth onView={useViev}/>);
     });
-
+    
 
     return(
         <>
