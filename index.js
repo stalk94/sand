@@ -149,6 +149,21 @@ app.post('/delColumn', (req, res)=> {
         res.send(user.todo);
     }
 });
+app.post('/swapColumns', (req, res)=> {
+    const verifu = authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = db.get("users."+req.body.login);
+        if(req.body.first && req.body.second){
+            user.todo.column[req.body.first - 1].id = req.body.second;
+            user.todo.column[req.body.second - 1].id = req.body.first;
+            [user.todo.column[req.body.first - 1], user.todo.column[req.body.second - 1]] = [user.todo.column[req.body.second - 1], user.todo.column[req.body.first - 1]]
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
+    }
+});
 app.post('/addCard', (req, res)=> {
     const verifu = authVerifuToken(req.body.login, req.body.token);
     
@@ -193,6 +208,6 @@ app.post('/delCard', (req, res)=> {
 
 
 //db.set("contacts", []);
-//db.set("users.test.todo", {column:[]});
+// db.set("users.test.todo", {column:[]});
 app.use('/', express.static(path.join(__dirname, '/dist')));
 server.listen(3000, ()=> console.log("start 3000"));

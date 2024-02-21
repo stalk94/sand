@@ -11,6 +11,7 @@ import { useDidMount } from 'rooks';
 import { encodeImageFileAsURL, fetchApi, useInfoToolbar } from "./engineHooks";
 import ToDo from './component/todo';
 import Calendar from "./component/calendar";
+import Lids from './component/lids';
 
 const navigation = [
     {label:'Контакты', icon:'pi pi-phone'},
@@ -42,7 +43,7 @@ export default function BaseContainer() {
             else if(target==='Планировщик') setView(<ToDo />);
             else if(target==="Календарь") setView(<Calendar />);
             else if(target==="Статистика") setView(<Stat/>);
-            else if(target==="Лиды") setView();
+            else if(target==="Лиды") setView(<Lids/>);
             else setView();
         });
     });
@@ -66,11 +67,11 @@ export default function BaseContainer() {
                     />
                 }
             />
-            <div style={{display:"flex",flexDirection:"row"}}>
+            <div style={{display:"flex",flexDirection:"row", height:"100%"}}>
                 <ToolBar />
                 { view }
             </div>
-            <div style={{textAlign:"center",backgroundColor:"black", position: "fixed", bottom: "0", width: "100%"}}>
+            <div style={{textAlign:"center",backgroundColor:"black"}}>
                 © { globalState.cooper.get() } { new Date().getFullYear() }
             </div>
         </React.Fragment>

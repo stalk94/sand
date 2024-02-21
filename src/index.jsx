@@ -11,6 +11,7 @@ import { useHookstate } from '@hookstate/core';
 import globalState from "./global.state";
 import { useDidMount } from 'rooks';
 import { Toast } from 'primereact/toast';
+import { PrimeReactProvider } from 'primereact/api';
 
 const icon = {
     sucess: "✔️",
@@ -50,5 +51,7 @@ function App() {
 
 
 window.onload =()=> createRoot(document.querySelector(".root")).render(
-      <App />
+    <PrimeReactProvider>
+        <App />
+    </PrimeReactProvider>
 );

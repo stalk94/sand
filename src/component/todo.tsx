@@ -1,11 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import globalState from "../global.state";
-import { useHookstate } from '@hookstate/core';
+import { ImmutableArray, useHookstate } from '@hookstate/core';
 import { fetchApi, useInfoToolbar } from "../engineHooks";
-import { DndContext, useDroppable, useDraggable, DragStartEvent, DragOverlay } from "@dnd-kit/core"
-import { SortableContext, useSortable } from "@dnd-kit/sortable"
+import { 
+    DndContext, 
+    useDroppable, 
+    useDraggable, 
+    DragStartEvent, 
+    DragOverlay, 
+    DragOverEvent, 
+    useSensors, 
+    useSensor, 
+    PointerSensor, 
+    DragEndEvent 
+} from "@dnd-kit/core"
+import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { createPortal } from "react-dom";
 
 import "./../style/todo.scss";
 
@@ -28,8 +40,10 @@ interface ICard {
 export default function ToDo() {
     
     const todo = useHookstate(globalState.user.todo);
-    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), todo.column);
+    const [columns, setColumns] = useState<IColumn[]>(JSON.parse(JSON.stringify(todo.column.get())));
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
+    const [activeCard, setActiveCard] = useState<ICard | null>(null);
+    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), [todo.column]);
 
     const setServerData = (path, data) => {
         fetchApi(path, data, (val) => {
@@ -40,17 +54,25 @@ export default function ToDo() {
 
     useEffect(() => {
         fetchApi("getTodo", {}, (data) => {
-            console.log(data);
-            globalState.user.todo.set(data);
+            todo.set(data);
+            setColumns(JSON.parse(JSON.stringify(todo.column.get())));
         });
-    }, []);
+    }, [todo]);
+    
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+          activationConstraint: {
+            distance: 3,
+          },
+        })
+      );
     
     const drawColumns = (columns) => {
         return (
             <React.Fragment>
                 <SortableContext items={columnIdes}>
-                    {columns.map((column: IColumn) => {
-                        return <Column column={column} setData={setServerData} key={column.id} />
+                    {columns.map((column: IColumn, index: number) => {
+                        return <Column key={index} column={column} setData={setServerData} />
                     })}
                 </SortableContext>
             </React.Fragment>    
@@ -60,16 +82,59 @@ export default function ToDo() {
     const onDragStart = (event: DragStartEvent) => {
         const dragObj = event.active.data.current;
         if (dragObj?.type === "Column") setActiveColumn(dragObj?.column)
+        if (dragObj?.type === "Card") setActiveCard(dragObj?.card)
+    }
+
+    const onDragEnd = (event: DragEndEvent, setData: Function) => {
+        const dragObj = event.active.data.current;
+        const { active, over } = event;
+
+        if (!over) return;
+
+        if (dragObj?.type === "Column") {
+            
+            if (active.id === over.id) {
+                setActiveColumn(null);
+                return;
+            }
+
+            setColumns((columns) => {
+                const activeColumnIndex = columns.findIndex((col) => col.id === active.id);
+                const overColumnIndex = columns.findIndex((col) => col.id === over.id);
+                return arrayMove(columns, activeColumnIndex, overColumnIndex);
+            });
+
+            setActiveColumn(null)
+        } 
+
+
+        if (dragObj?.type === "Card") {
+            const activeCardId = active.id; 
+            const overCardId = over.id;
+
+            if (activeCardId === overCardId) {
+                setActiveCard(null);
+                return;
+            }
+
+
+            setActiveCard(null)
+        }
     }
 
     return (
-        <DndContext onDragStart={onDragStart}>
+        <DndContext
+            sensors={sensors}
+            onDragStart={onDragStart}
+            onDragEnd={(e) => onDragEnd(e, setServerData)}
+        >
             <div className="board">
-                {drawColumns(todo.column.get())}
+                {drawColumns(columns)}
                 <ColumnForm setData={setServerData} />
             </div>
             <DragOverlay>
                 {activeColumn && <Column column={activeColumn} setData={setServerData} />}
+                {activeCard && <Card card={activeCard} />}
             </DragOverlay>
         </DndContext>
     )
@@ -145,13 +210,28 @@ const CardForm = (props: {listId: number, setData: Function}) => {
 const Card = (props: {card: ICard}) => {
     const {card} = props;
 
-    const {attributes, listeners, setNodeRef, transform} = useDraggable({
+    const {setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
         id: card.id,
+        data: {
+            type: "Card",
+            card,
+        },
     });
 
     const style = transform ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        transition
     } : undefined;
+
+    if (isDragging) {
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className="card active"
+            ></div>
+        )
+    }
 
     return (
         <div 
@@ -170,6 +250,7 @@ const Card = (props: {card: ICard}) => {
 
 const Column = (props: {column: IColumn, setData: Function}) => {
     const {column, setData} = props;
+    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [column])
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
         id: column.id,
@@ -208,9 +289,11 @@ const Column = (props: {column: IColumn, setData: Function}) => {
                 <h2>{column.title}</h2>
                 <button onClick={() => setData("delColumn", {id: column.id})}><i className="pi pi-times"></i></button>
             </div>
-            {column.cards && column.cards.map((card) => {
-                return <Card key={card.id} card={card} />   
-            })}
+            <SortableContext items={cardsIdes}>
+                {column.cards && column.cards.map((card, index) => {
+                    return <Card card={card} key={index} />   
+                })}
+            </SortableContext>
             <CardForm listId={column.id} setData={setData} />
         </div>
     )

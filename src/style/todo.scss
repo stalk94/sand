@@ -12,6 +12,8 @@
     flex-direction: column;
     gap: 10px;
     min-width: 250px;
+    min-height: fit-content;
+    max-height: 95%;
     background-color: rgb(65, 65, 65);
     padding: 0px 12px 12px 12px;
 
@@ -28,6 +30,10 @@
     align-items: center;
     justify-content: start;
     padding: 0px 6px;
+
+    &.active {
+        background-color: rgb(99, 99, 99);
+    }
 }
 
 .p-panel-content {

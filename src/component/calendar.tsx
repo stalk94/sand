@@ -2,7 +2,7 @@ import React from "react";
 import globalState from "../global.state";
 import { EventCalendar, Day } from "../lib/type";
 import { ModalEventCalendar, ModalAddEvent } from "./modal.calendar";
-import { useInfoToolbar, fetchApi, useToolbar, getDays } from "../engineHooks";
+import { useInfoToolbar, fetchApi, useToolbar } from "../engineHooks";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Menu } from 'primereact/menu';
