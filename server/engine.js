@@ -1,11 +1,7 @@
-const fs = require("fs");
 const CryptoJS = require('crypto-js');
 const { QuickDB } = require("quick.db");
-const pinoms = require('pino-multi-stream');
 const db = new QuickDB();
 
-globalThis.logger = pinoms(pinoms.multistream([{stream: fs.createWriteStream('log.log')},{stream: pinoms.prettyStream()}]))
-process.on("uncaughtException", (err)=> logger.error(err));
 
 
 const getMonth =()=> {
@@ -103,6 +99,7 @@ exports.useMemory =()=> {
         external: `${formatMemoryUsage(memoryData.external)}`,
     };
     console.log(memoryUsage);
+    return memoryUsage;
 }
 
 

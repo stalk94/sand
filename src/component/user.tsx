@@ -15,11 +15,60 @@ import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { FaRegEnvelope, FaRegEnvelopeOpen } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaInfo } from "react-icons/fa6";
+import { IoMdTime } from "react-icons/io";
+import { MdPostAdd } from "react-icons/md";
 import { useToolbar, fetchApi, useInfoToolbar, encodeImageFileAsURL } from "../engineHooks";
 import { AddUser, SendMail } from "./modal.user";
+import { useDidMount } from "rooks";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
  
 
+const Logs =()=> {
+    const [logs, setLogs] = React.useState([]);
+
+    const getColor =(data)=> {
+        if(data.type==='system crash') return "red";
+        else if(data.type==='critical') return '#f9d55d';
+        else return 'grey'
+    }
+    useDidMount(()=> {
+        fetchApi("getLogs", {type:'error'}, (res)=> {
+            if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
+            else setLogs(res);
+        });
+    });
+
+
+    return(
+            <DataTable paginator
+                rows={15}
+                style={{width:"80%"}}
+                value={logs.reverse()}
+                selectionMode={'single'} 
+            >
+                <Column
+                    header={<><IoMdTime/> время</>}
+                    body={(data)=> <>[{data.timeshtamp.data}]  {data.timeshtamp.time}</>}
+                />
+                <Column header={<><MdPostAdd/> сообщение</>}
+                    body={(data)=>
+                        <ScrollPanel style={{maxHeight:'60px'}}>
+                            <var style={{color:getColor(data)}}>
+                                {data.msg}
+                            </var>
+                        </ScrollPanel>
+                    } 
+                />
+                <Column header={<><FaInfo/> статус</>}
+                    body={(data)=> {
+                        if(data.type==='system crash') return '❗️🆘';
+                        else if(data.type==='critical') return '⚠️';
+                        else return '❕';
+                    }}
+                />
+            </DataTable>
+    );
+}
 const LabelMassage =()=> {
     const massage = useHookstate(globalState.user.massage);
 
@@ -178,13 +227,12 @@ const UserSettings =({userData})=> {
 export default function User() {
     const [view, setView] = React.useState<JSX.Element>();
     const [modal, setModal] = React.useState<string|undefined>();
-    const [curent, setCurent] = React.useState<'base'|'post'|'users'>('users');
+    const [curent, setCurent] = React.useState<'base'|'post'|'users'|'logs'>('users');
     const users = useHookstate(globalState.users);
     const state = useHookstate(globalState.user);
 
     const setMassageStatus =(massage:Massage)=> {
         fetchApi("readStatusMail", {msg:massage}, (res)=> {
-            console.log(res)
             if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
             else state.massage.set(res);
         });
@@ -222,6 +270,11 @@ export default function User() {
                 command:()=> setCurent('users')
             }
         ];
+        if(globalState.user.permision.get()===0) items.push({   
+            label: 'Логи сервера', 
+            icon: 'pi pi pi-server', 
+            command:()=> setCurent('logs')
+        });
         useToolbar(<Menu style={{width:"20%"}} model={items}/>);
 
         if(curent==="base") setView(
@@ -287,6 +340,7 @@ export default function User() {
                 />
             </DataTable>
         );
+        else if(curent==="logs") setView(<Logs />);
     }, [curent, modal, state]);
     
 

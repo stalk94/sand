@@ -44,10 +44,13 @@ function App() {
     
 
     return(
-        <>
+        <div>
             <Toast position="bottom-left" ref={toast} />
             { view }
-        </>
+            <footer style={{textAlign:"center",backgroundColor:"black",marginTop:'3px'}}>
+                © { state.cooper.get() } { new Date().getFullYear() }
+            </footer>
+        </div>
     );
 }
 

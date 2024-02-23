@@ -7,6 +7,7 @@ import ContactData from "./component/contacts";
 import User from "./component/user";
 import ToolBar from "./component/toolbar";
 import Stat from "./component/stat";
+import { Badge } from 'primereact/badge';
 import { useDidMount, useIntervalWhen } from 'rooks';
 import { encodeImageFileAsURL, fetchApi, useInfoToolbar, getMemory } from "./engineHooks";
 import ToDo from './component/todo';
@@ -20,6 +21,15 @@ const navigation = [
     {label:'Статистика', icon:'pi pi-chart-bar'},
     {label:'Планировщик', icon:'pi pi-book'}
 ];
+const EventBadge =()=> {
+    return(
+        <i className="pi pi-bell mr-4 p-text-secondary p-overlay-badge"
+            style={{marginRight:"20px",fontSize:"25px"}}
+        >
+            <Badge value="2" severity='info' />
+        </i>
+    );
+}
 
 
 export default function BaseContainer() {
@@ -68,18 +78,17 @@ export default function BaseContainer() {
                     /> 
                 }
                 end={ 
-                    <Button 
-                        onClick={()=> setView(<User />)} 
-                        icon="pi pi-user"
-                    />
+                    <div>
+                        <Button 
+                            onClick={()=> setView(<User />)} 
+                            icon="pi pi-user"
+                        />
+                    </div>
                 }
             />
             <div style={{display:"flex",flexDirection:"row"}}>
                 <ToolBar />
                 { view }
-            </div>
-            <div style={{textAlign:"center",backgroundColor:"black"}}>
-                © { state.cooper.get() } { new Date().getFullYear() }
             </div>
         </React.Fragment>
     );

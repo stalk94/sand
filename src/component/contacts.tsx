@@ -171,74 +171,71 @@ export default function ContactData() {
     
     return(
         <div style={{width:"100%"}} className="datatable-templating-demo">
-            <div className="card">
-                <ConfirmPopup />
-                <DataTable 
-                    rows={15}
-                    value={state} 
-                    header={heaader}
-                    footer={footer}
-                    paginator
-                    responsiveLayout="scroll"
-                >
-                    <Column header="name" body={(rowData)=> 
+            <ConfirmPopup />
+            <DataTable 
+                rows={15}
+                value={state} 
+                header={heaader}
+                footer={footer}
+                paginator
+            >
+                <Column header="name" body={(rowData)=> 
+                    <div>
+                        { rowData.name }
+                        <Button 
+                            style={{float:"right",border:"none"}}
+                            className="p-button-outlined p-button-secondary"
+                            icon="pi pi-pencil" 
+                            onClick={(ev)=> useAction("readName", rowData, ev)}
+                        />
+                    </div>
+                }/>
+                <Column 
+                    header="category"
+                    body={(rowData)=> 
                         <div>
-                           { rowData.name }
+                            <var onClick={()=> filtre("category", rowData.category)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.category }</var>
                             <Button 
                                 style={{float:"right",border:"none"}}
                                 className="p-button-outlined p-button-secondary"
-                                icon="pi pi-pencil" 
-                                onClick={(ev)=> useAction("readName", rowData, ev)}
+                                icon="pi pi-pencil"
+                                onClick={(ev)=> useAction("readCat", rowData, ev)}
                             />
                         </div>
-                    }/>
-                    <Column 
-                        header="category"
-                        body={(rowData)=> 
-                            <div>
-                                <var onClick={()=> filtre("category", rowData.category)} style={{fontSize:"20px",cursor:"pointer"}}>{ rowData.category }</var>
-                                <Button 
-                                    style={{float:"right",border:"none"}}
-                                    className="p-button-outlined p-button-secondary"
-                                    icon="pi pi-pencil"
-                                    onClick={(ev)=> useAction("readCat", rowData, ev)}
-                                />
-                            </div>
-                        } 
-                    />
-                    <Column field="rating" header="telophone" body={(rowData)=> 
-                        <div>
-                           { rowData.telephone }
+                    } 
+                />
+                <Column field="rating" header="telophone" body={(rowData)=> 
+                    <div>
+                        { rowData.telephone }
+                        <Button 
+                            style={{float:"right",border:"none"}}
+                            className="p-button-outlined p-button-secondary"
+                            icon="pi pi-pencil" 
+                            onClick={(ev)=> useAction("readTel", rowData, ev)}
+                        />
+                    </div>
+                }/>
+                <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
+                <Column header="author" body={(rowData)=> 
+                    <var 
+                        onClick={()=> filtre("author", rowData.author)} 
+                        style={{fontSize:"20px",cursor:"pointer",color:globalState.user.login.get()===rowData.author?"#f9cb76":""}}
+                    >
+                        { rowData.author }
+                    </var>
+                }/>
+                <Column 
+                    body={(rowData)=> (
+                        <div style={{marginLeft:"35%"}}>
                             <Button 
-                                style={{float:"right",border:"none"}}
-                                className="p-button-outlined p-button-secondary"
-                                icon="pi pi-pencil" 
-                                onClick={(ev)=> useAction("readTel", rowData, ev)}
+                                className="p-button-outlined p-button-danger" 
+                                icon="pi pi-times-circle" 
+                                onClick={(ev)=> useAction("del", rowData.id, ev)}
                             />
                         </div>
-                    }/>
-                    <Column header="time" body={(rowData)=> <div>{ rowData.timeshtamp }</div>}/>
-                    <Column header="author" body={(rowData)=> 
-                        <var 
-                            onClick={()=> filtre("author", rowData.author)} 
-                            style={{fontSize:"20px",cursor:"pointer",color:globalState.user.login.get()===rowData.author?"#f9cb76":""}}
-                        >
-                            { rowData.author }
-                        </var>
-                    }/>
-                    <Column 
-                        body={(rowData)=> (
-                            <div style={{marginLeft:"35%"}}>
-                                <Button 
-                                    className="p-button-outlined p-button-danger" 
-                                    icon="pi pi-times-circle" 
-                                    onClick={(ev)=> useAction("del", rowData.id, ev)}
-                                />
-                            </div>
-                        )}
-                    />
-                </DataTable>
-            </div>
+                    )}
+                />
+            </DataTable>
         </div>
     );
 }

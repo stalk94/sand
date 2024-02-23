@@ -1,6 +1,11 @@
 const { db } = require("./engine");
 
 
+db.set('logs', {
+    error: [],
+    warn: [],
+    info: []
+});
 db.set('contacts', []);
 db.set('users', {
     admin: {

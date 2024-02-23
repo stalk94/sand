@@ -1,3 +1,4 @@
+require("./server/loger");
 const dotenv = require('dotenv').config();
 const fs = require("fs");
 const http = require('http');
@@ -64,6 +65,12 @@ app.post('/getState', async(req, res)=> {
             users: users
         });
     }
+});
+app.post('/getLogs', async(req, res)=> {
+    const userData = await authVerifu(req.body.login, req.body.pass);
+    
+    if(userData.error && prod!=="false") res.send(userData);
+    else res.send(await logger.getLogs(req.body.type));
 });
 app.post('/readPassword', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
@@ -355,7 +362,7 @@ app.post('/exit', async(req, res)=> {
         user.online = false;
         db.set('users.'+verifu.login, user);
         res.send(verifu);
-        console.log(req.body.login + ' offline')
+        logger.info(req.body.login + ' offline')
     }
 });
 app.post('/readSettings', async(req, res)=> {
@@ -370,8 +377,6 @@ app.post('/readSettings', async(req, res)=> {
         }
     }
 });
-
-
 
 
 
