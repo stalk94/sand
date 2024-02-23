@@ -1,40 +1,45 @@
-const db = require("quick.db");
+const { db } = require("./engine");
 
 
-db.set("lids", [])
-db.set("calendar", {})
-db.set("stat", {})
-db.set("calendar", {})
-
-
-db.set("contacts", [{
-    id: 0,
-    name: "test",
-    timeshtamp: '24.07.2023',
-    telephone: "+384940932343",
-    category: "важные",
-    author: "admin",
-    data: {}
-}]);
-db.set("users", {
-    "test": {
-        login: "test",
-        password: "test",
+db.set('contacts', []);
+db.set('users', {
+    admin: {
+        login: "admin",
+        token: "",
+        password: 'admin',
         id: 0,
-        theme: "dark",
+        intervalLoad: 7000,
+        online: true,
         avatar: undefined,
+        massage: [],
         permision: 0,
+        color: 'red',
         todo: {
-            column: [{
-                id: 0,
-                index: 0,
-                cards: [{
-                    index: 0,
-                    content: {}
-                }]
-            }]
+            column: []
         }
     }
 });
-db.set("cooper", "newCompany");
-db.set("logo", undefined);
+db.set('lids', []);
+db.set('calendar', {});
+db.set('cooper', 'new company');
+
+
+db.set('users.test', {
+    login: "test",
+    token: "",
+    password: 'test',
+    id: 0,
+    online: true,
+    avatar: undefined,
+    massage: [{
+        text: `DataTable responsive layout can be achieved in two ways; first approach `,
+        author: "test",
+        timeshtamp: new Date().getDate()+"."+new Date().getMonth()+"."+new Date().getFullYear(),
+        view: false
+    }],
+    permision: 0,
+    color: 'red',
+    todo: {
+        column: []
+    }
+});

@@ -144,7 +144,6 @@ export default function ContactData() {
         setFilter(false);
     }
     useDidMount(()=> useToolbar());
-    
 
     const heaader =(
         <div style={{display:"block"}}>
@@ -179,6 +178,7 @@ export default function ContactData() {
                     value={state} 
                     header={heaader}
                     footer={footer}
+                    paginator
                     responsiveLayout="scroll"
                 >
                     <Column header="name" body={(rowData)=> 
@@ -230,7 +230,7 @@ export default function ContactData() {
                         body={(rowData)=> (
                             <div style={{marginLeft:"35%"}}>
                                 <Button 
-                                    className="p-button-danger" 
+                                    className="p-button-outlined p-button-danger" 
                                     icon="pi pi-times-circle" 
                                     onClick={(ev)=> useAction("del", rowData.id, ev)}
                                 />

@@ -5,3 +5,16 @@
     border-radius: 50%;
     border: 3px solid red
 }
+
+.msgContainer {
+
+}
+
+.msg {
+
+}
+
+.msgTitle {
+    display: flex;
+    flex-direction: row;
+}

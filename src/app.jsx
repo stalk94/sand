@@ -7,12 +7,10 @@ import ContactData from "./component/contacts";
 import User from "./component/user";
 import ToolBar from "./component/toolbar";
 import Stat from "./component/stat";
-import { useDidMount } from 'rooks';
-import { encodeImageFileAsURL, fetchApi, useInfoToolbar } from "./engineHooks";
+import { useDidMount, useIntervalWhen } from 'rooks';
+import { encodeImageFileAsURL, fetchApi, useInfoToolbar, getMemory } from "./engineHooks";
 import ToDo from './component/todo';
 import Calendar from "./component/calendar";
-
-
 
 
 const navigation = [
@@ -24,11 +22,11 @@ const navigation = [
 ];
 
 
-
 export default function BaseContainer() {
     const state = useHookstate(globalState);
     const [view, setView] = React.useState();
     
+    getMemory();
     const useLoadLogo =()=> {
         if(state.user.permision.get()===0) encodeImageFileAsURL((result)=> {
             fetchApi("readBaseCrmData", {logo: result}, (responce)=> {
@@ -38,7 +36,7 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<Stat/>);
+        setView(<User/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
@@ -48,7 +46,14 @@ export default function BaseContainer() {
             else if(target==="Лиды") setView();
             else setView();
         });
+        
     });
+    useIntervalWhen(()=> {
+        fetchApi("getState", {}, (res)=> {
+            if(res.error) useInfoToolbar("error", "Error", res.error);
+            else state.set(res);
+        });
+    }, state.user.intervalLoad.get() ?? 7000, false);
 
     
     return(
@@ -79,3 +84,13 @@ export default function BaseContainer() {
         </React.Fragment>
     );
 }
+
+/**
+ * window.onbeforeunload =(event)=> { 
+            event.preventDefault(); 
+            fetchApi("exit", {}, (res)=> {
+                if(res.error) useInfoToolbar("error", "Error", res.error);
+                else console.log(res);
+            });
+        };
+ */

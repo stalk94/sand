@@ -4,9 +4,9 @@ import globalState from "../global.state";
 import { useHookstate } from "@hookstate/core";
 import { useDidMount, useWillUnmount } from 'rooks';
 import { useInfoToolbar, fetchApi } from "../engineHooks";
-import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
+import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import "../style/modal.css";
 
@@ -64,9 +64,7 @@ export function ModalAddEvent() {
     }
     const getUserName =()=> {
         const result = [];
-        users.forEach((user)=> {
-            if(user.permision<=globalState.user.permision.get()) result.push(user.login);
-        });
+        users.get().forEach((user)=> result.push(user.login));
         return result;
     }
     useDidMount(()=> EVENT.on("clickCell", eventOn));
@@ -74,29 +72,40 @@ export function ModalAddEvent() {
     
 
     return(
-        <div className="modalContainer" style={{display:view?"":"none"}}>
-            <Card 
-                title={
-                    <div className="column">
-                        <InputText name="title" value={title} onChange={useDataInput} placeholder='title'/>
-                        <Dropdown name="to" value={to} onChange={useDataInput} options={getUserName()}/>
-                        <Dropdown name="color" value={color} onChange={useDataInput} options={colors}/>
-                        <InputText name="text" value={text} onChange={useDataInput} placeholder='text'/>
-                    </div>
-                }
-                footer={
-                    <span>
-                        <Button onClick={useCreateEvent} label="Add event" icon="pi pi-check" className="p-button-success" style={{marginRight:'20px'}}/>
-                        <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
-                    </span>
-                }
-            >
-            </Card>
-        </div>
+        <Dialog 
+            header="Добавить событие" 
+            visible={view} 
+            style={{width: '50vw'}} 
+            modal 
+            onHide={()=> setView(false)}
+            footer={
+                <span>
+                    <Button onClick={useCreateEvent} label="Add event" icon="pi pi-check" className="p-button-success" style={{marginRight:'20px'}}/>
+                    <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
+                </span>
+            }
+        >
+            <div className="column">
+                <div className="field">
+                    <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">title</label>
+                    <InputText name="title" value={title} onChange={useDataInput}/>
+                </div>
+                <div className="field">
+                    <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">исполнитель</label>
+                    <Dropdown name="to" value={to} onChange={useDataInput} options={getUserName()}/>
+                </div>
+                <div className="field">
+                    <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">цвет события</label>
+                    <Dropdown name="color" value={color} onChange={useDataInput} options={colors}/>
+                </div>
+                <div className="field">
+                    <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">текст события</label>
+                    <InputText name="text" value={text} onChange={useDataInput}/>
+                </div>
+            </div>
+        </Dialog>
     );
 }
-
-
 export function ModalEventCalendar() {
     const [view, setView] = React.useState<boolean>(false);
     const [date, setDate] = React.useState<Array<number>>([]);
@@ -132,24 +141,22 @@ export function ModalEventCalendar() {
 
 
     return(
-        <div className="modalContainer" style={{display:view?"":"none"}}>
-            <Card 
-                title={<div style={{color:event.content.color}}>{event.title}</div>}
-                subTitle={
-                    <>
-                        <div>{"исполнитель: "+(event.to??"все")}</div>
-                        <div>{"автор: "+event.author}</div>
-                    </>
-                }
-                footer={
-                    <span>
-                        <Button onClick={useDelEvent} label="Delete" icon="pi pi-trash" className="p-button-danger" style={{marginRight:'20px'}}/>
-                        <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
-                    </span>
-                }
-            >
-                {event.content.text}
-            </Card>
-        </div>
+        <Dialog 
+            header={<div style={{color:event.content.color,fontSize:"25px"}}>{event.title}</div>} 
+            visible={view} 
+            style={{width: '50vw'}} 
+            modal 
+            onHide={()=> setView(false)}
+            footer={
+                <span>
+                    <Button onClick={useDelEvent} label="Delete" icon="pi pi-trash" className="p-button-danger" style={{marginRight:'20px'}}/>
+                    <Button onClick={()=> setView(false)} label="Cancel" icon="pi pi-times" className="p-button-secondary"/>
+                </span>
+            }
+        >
+            <div style={{color:"gray"}}>{"исполнитель: "+(event.to??"все")}</div>
+            <div style={{color:"gray"}}>{"автор: "+event.author}</div>
+            <div style={{marginTop:"5%"}}>{event.content.text}</div>
+        </Dialog>
     );
 }

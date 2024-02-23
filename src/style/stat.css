@@ -1,0 +1,23 @@
+.filtreBox {
+    padding-bottom: 10px;
+    margin-top: 1%;
+    border-bottom: 1px solid gray;
+}
+
+.tableCont {
+    display: flex;
+    flex-direction: row;
+}
+
+.columnCont {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid grey;
+    padding: 4px;
+}
+
+.allContainer {
+    display: grid;
+    column-gap: 20px;
+    row-gap: 20px;
+}

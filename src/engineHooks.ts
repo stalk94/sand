@@ -139,3 +139,66 @@ export function getDays(year:number, month:number): Array<Array<{day:number,week
     
     return _.chunk(dayFillGrid(days), 7);
 }
+
+
+/**
+ * Отфильтрует контакты по автору и времени создания
+ * @param userLogin
+ * @param time 
+ * @returns 
+ */
+export function getFilterContact(time:string|undefined, userLogin:string|undefined) {
+    let contacts = globalState.contacts.get();
+    if(userLogin) contacts = contacts.filter((element)=> element.author===userLogin && element);
+   
+    if(time && time!==""){
+        return contacts.filter((element)=> {
+            if(element.timeshtamp.includes(time)) return element;
+        });
+    }
+    else return contacts;
+}
+
+
+/**
+ * Отфильтрует лиды по автору и времени создания
+ * @param userLogin 
+ * @param time 
+ * @returns 
+ */
+export function getFilterLids(time:string|undefined, userLogin:string|undefined) {
+    let lids = globalState.lids.get();
+    if(userLogin) lids = lids.filter((element)=> element.author===userLogin && element);
+
+    if(time && time!==""){
+        return lids.filter((element)=> element.timeshtamp.includes(time) && element);
+    }
+    else return lids;
+}
+
+
+export function getUseTime(date:Array<number|string>) {
+    const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+    
+    let curmonth = '.0';
+    month.forEach((elem, index)=> {
+        if(elem===date[0]){
+            if(index < 10) curmonth = `.0${index}`;
+            else curmonth = '.'+index.toString();
+        }
+    });
+
+    let time = "";
+    if(date[0]!=="не выбрано") time = curmonth;
+    if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
+    return time;
+}
+
+
+export function getMemory() {
+    const formatMemoryUsage =(data)=> `${Math.round(data / 1024 / 1024 * 100) / 100} MB`;
+    console.log(`
+        totalHeap: ${formatMemoryUsage(window.performance.memory.totalJSHeapSize)}
+        usedHeap: ${formatMemoryUsage(window.performance.memory.usedJSHeapSize)}
+    `)
+}
