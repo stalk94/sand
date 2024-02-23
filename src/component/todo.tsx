@@ -20,6 +20,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { createPortal } from "react-dom";
 
 import "./../style/todo.scss";
+import { useDidMount } from "rooks";
 
 interface IColumn {
     title: string;
@@ -43,7 +44,7 @@ export default function ToDo() {
     const [columns, setColumns] = useState<IColumn[]>(JSON.parse(JSON.stringify(todo.column.get())));
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
-    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), []);
+    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), [todo.column]);
 
     const setServerData = (path, data) => {
         fetchApi(path, data, (val) => {
@@ -52,12 +53,16 @@ export default function ToDo() {
         });
     }
 
-    useEffect(() => {
+    useDidMount(() => {
         fetchApi("getTodo", {}, (data) => {
             todo.set(data);
-            setColumns(JSON.parse(JSON.stringify(todo.column.get())));
-        });
-    }, []);
+        })
+    });
+
+    useEffect(() => {
+        setColumns(JSON.parse(JSON.stringify(todo.column.get())));
+    }, [todo]);
+
     
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -103,6 +108,8 @@ export default function ToDo() {
                 const overColumnIndex = columns.findIndex((col) => col.id === over.id);
                 return arrayMove(columns, activeColumnIndex, overColumnIndex);
             });
+
+            setData("swapColumns", {first: active.id, second: over.id});
 
             setActiveColumn(null)
         } 
@@ -250,7 +257,7 @@ const Card = (props: {card: ICard}) => {
 
 const Column = (props: {column: IColumn, setData: Function}) => {
     const {column, setData} = props;
-    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [])
+    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [column])
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
         id: column.id,
