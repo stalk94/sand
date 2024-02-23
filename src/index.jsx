@@ -4,13 +4,13 @@ import "primereact/resources/primereact.min.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "./lib/engine";
-import { createRoot } from 'react-dom/client';
 import Base from "./app";
 import Auth from "./component/auth";
-import { useHookstate } from '@hookstate/core';
 import globalState from "./global.state";
 import { useDidMount } from 'rooks';
 import { Toast } from 'primereact/toast';
+import { useHookstate } from '@hookstate/core';
+import { createRoot } from 'react-dom/client';
 
 
 
@@ -27,7 +27,6 @@ function App() {
     const toast = React.useRef(null);
 
     
-    const useViev =()=> setView(<Base/>);
     const showToast =(type, title, text)=> {
         toast.current.show({
             severity: type, 
@@ -39,7 +38,7 @@ function App() {
     useDidMount(()=> {
         EVENT.on("infoPanel", (detail)=> showToast(detail.type, detail.title, detail.text));
         if(state.user.get() && state.user.login.get()) setView(<Base/>);
-        else setView(<Auth onView={useViev}/>);
+        else setView(<Auth onView={()=> setView(<Base/>)}/>);
     });
     
 

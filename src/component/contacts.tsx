@@ -16,6 +16,7 @@ import { IoReload } from "react-icons/io5";
 
 
 type Action = 'readName'|'readCat'|'readTel'|'del'|'readPriorety';
+type AddContactProps = {useCache: (values: Contact)=> void}
 const priorety = {
     exc: <FaExclamation color="red"/>,
     crown: <FaCrown color="gold" />,
@@ -33,7 +34,7 @@ const dropDown = [
 
 
 
-const AddContact =({useCache}: {useCache: (values: Contact)=> void})=> {
+const AddContact =({useCache}: AddContactProps)=> {
     const [state, setState] = React.useState<Contact>({});
 
     const setVal:React.ChangeEventHandler =(ev)=> {

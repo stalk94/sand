@@ -48,7 +48,7 @@ export const DateCalendarPicker =({curentDate, useDate}: DateCalendarProps)=> {
 
         setArrYear(arr);
     });
-    const useClick =(val:"left"|"right")=> {
+    const useClick =(val: "left"|"right")=> {
         if(val==="left"){
             if(curentDate[1]===0) useDate([curentDate[0]-1, 11]);
             else useDate([curentDate[0], curentDate[1]-1]);
@@ -168,7 +168,7 @@ const GridCalendar =({date}: {date: Array<number>})=> {
 
 
 export default function BaseContainer() {
-    const [date, setDate] = React.useState([new Date().getFullYear(), new Date().getMonth()]);
+    const [date, setDate] = React.useState<Array<number>>([new Date().getFullYear(), new Date().getMonth()]);
 
     useDidMount(()=> {
         const items = [{   

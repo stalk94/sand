@@ -18,7 +18,7 @@ import { FaRegStar, FaRegChartBar } from "react-icons/fa";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
 
-type Stat = {
+type StatProps = {
     date: Array<string|number>
     curentUser: Array<string>
     useCurUser: React.Dispatch<React.SetStateAction<string[]>>
@@ -104,7 +104,7 @@ const Checker =({data, value, useSetCurUser}: CheckerProps)=> {
 const ListStatContact =({data, useCurUser, curentUser}: StatContactProps)=> {
     const [render, setRender] = React.useState<Array<DataRenderContact>>([]);
 
-    const useSetCurUser =(elem:ToggleButtonChangeEvent, data:DataRenderContact)=> {
+    const useSetCurUser =(elem: ToggleButtonChangeEvent, data: DataRenderContact)=> {
         if(elem.value===false){
             curentUser.forEach((name:string, index:number)=> {
                 if(name===data.name) curentUser.splice(index, 1);
@@ -113,7 +113,7 @@ const ListStatContact =({data, useCurUser, curentUser}: StatContactProps)=> {
         }
         else useCurUser([...curentUser, data.name]);
     }
-    const useValue =(rowData:DataRenderContact)=> {
+    const useValue =(rowData: DataRenderContact)=> {
         if(curentUser.find((elem: string)=> elem===rowData.name)) return true;
         else return false;
     }
@@ -205,7 +205,7 @@ const ListStatLids =({data, useCurUser, curentUser}: StatLidsProps)=> {
     );
 }
 
-const StatContact =({date, curentUser, useCurUser}: Stat)=> {
+const StatContact =({date, curentUser, useCurUser}: StatProps)=> {
     const [curView, setView] = React.useState<JSX.Element>();
     
     const useFilter =()=> {
@@ -252,7 +252,7 @@ const StatContact =({date, curentUser, useCurUser}: Stat)=> {
         </div>
     );
 }
-const StatLids =({date, curentUser, useCurUser}: Stat)=> {
+const StatLids =({date, curentUser, useCurUser}: StatProps)=> {
     const category = [{icon:"pi pi-list",value:'all'},{icon:"pi pi-dollar",value:'price'},{icon:"pi pi-lock",value:'close'},{icon:"pi pi-times",value:'filed'}];
     const [curCategory, setCategory] = React.useState<'all'|'price'|'close'|'filed'>('all');
     const [curView, setView] = React.useState<JSX.Element>();
@@ -478,7 +478,7 @@ export default function Statistic() {
 
         useToolbar(<Menu style={{width:"20%"}} model={items}/>);
     });
-    const changeDate =(curDate)=> {
+    const changeDate =(curDate: Array<string|number>)=> {
         setCurUser([]);
         setDate(curDate);
     }

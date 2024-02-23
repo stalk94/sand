@@ -17,7 +17,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaInfo } from "react-icons/fa6";
 import { IoMdTime } from "react-icons/io";
 import { MdPostAdd } from "react-icons/md";
-import { useToolbar, fetchApi, useInfoToolbar, encodeImageFileAsURL } from "../engineHooks";
+import { useToolbar, fetchApi, useInfoToolbar } from "../engineHooks";
 import { AddUser, SendMail } from "./modal.user";
 import { useDidMount } from "rooks";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
