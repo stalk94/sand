@@ -1,0 +1,98 @@
+.board {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px;
+    min-height: 100%;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 250px;
+    min-height: fit-content;
+    max-height: 95%;
+    background-color: rgb(65, 65, 65);
+    padding: 0px 12px 12px 12px;
+
+    &.active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.card {
+    min-width: 220px;
+    min-height: 75px;
+    background-color: rgb(99, 99, 99);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 0px 6px;
+
+    &.active {
+        background-color: rgb(99, 99, 99);
+    }
+}
+
+.p-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap:  10px;
+    min-width: 254px;
+}
+
+.toggle-button {
+    max-height: 45px;
+    min-width: 260px;
+}
+
+.list-form {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    gap: 10px;
+    min-width: 260px;
+    max-height: 100px;
+    background-color: #323232;
+    border-radius: 3px;
+}
+
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgb(99, 99, 99);
+    min-height: 75px;
+    
+}
+
+.form-buttons__container {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.create-card__button {
+    min-height: 50px;
+}
+
+.column__header-template {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 6px;
+    margin: 0px -12px;
+    background-color: #2a2a2a;
+    border-radius: 2px;
+
+    h2 {
+        margin: 0;
+    }
+
+    button {
+        min-height: 32px;
+        
+    }
+}
