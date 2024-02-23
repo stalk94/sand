@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from "react";
+import globalState from "../global.state";
 
 import "./../style/lids.scss";
 
@@ -11,10 +12,12 @@ interface ICustomSelect {
 
 
 export default function Lids() {
+    const lids = globalState.lids;
+
 
     return (
         <React.Fragment>
-            <Sidebar/>
+            <Sidebar groups={lids.groups}/>
             <div className="lids__page">
                 <div className="header">
                     <CustomLabel text="Hello User!" style="gray size__large weight__semi-bold" />
@@ -26,7 +29,22 @@ export default function Lids() {
     )
 }
 
-const Sidebar = () => {
+const Sidebar = (props: {groups}) => {
+    const {groups} = props;
+
+    const drawGroups = (groups: Array<string>) => {
+        return groups.map((group: string) => {
+            return (
+                <li className="nav__item">
+                    <button>{group}</button>
+                </li>
+            )
+        }) 
+    }
+
+    const createNewGroup = (name: string) => {
+        
+    }
 
     return (
         <div className="sidebar">
@@ -34,18 +52,7 @@ const Sidebar = () => {
                 <nav className="sidebar__nav">
                     <h2 className="nav__title">Lid Groups</h2>
                     <ul>
-                        <li className="nav__item">
-                            <button>ITEM</button>
-                        </li>
-                        <li className="nav__item">
-                            <button>ITEM</button>
-                        </li>
-                        <li className="nav__item">
-                            <button>ITEM</button>
-                        </li>
-                        <li className="nav__item">
-                            <button>ITEM</button>
-                        </li>
+                        {drawGroups(groups.get())}
                     </ul>
                     <button className="create-item">Create new Group</button>
                 </nav>

@@ -53,8 +53,11 @@ const globalState = hookstate({
         ],
         customers: [
             {
-                id: 1,
-                timeshtamp: "11.12.2003",
+                id: 0,
+                timeshtamp: '24.02.2023',
+                author: "test",
+                status: "close",
+                price: 300,
                 name: "Jane Cooper",
                 company: "Microsoft",
                 phone: "(255) 555-0118",
@@ -62,17 +65,15 @@ const globalState = hookstate({
                 country: {
                     name: "USA",
                     region: ""
-                },
-                status: false,
-                price: {
-                    currency: "USD",
-                    value: 500
                 },
                 description: "lorem ipsum sorem inu merol",
             },
             {
-                id: 1,
-                timeshtamp: "11.12.2003",
+                id: 0,
+                timeshtamp: '24.02.2023',
+                author: "test",
+                status: "close",
+                price: 300,
                 name: "Jane Cooper",
                 company: "Microsoft",
                 phone: "(255) 555-0118",
@@ -80,17 +81,15 @@ const globalState = hookstate({
                 country: {
                     name: "USA",
                     region: ""
-                },
-                status: false,
-                price: {
-                    currency: "USD",
-                    value: 500
                 },
                 description: "lorem ipsum sorem inu merol",
             },
             {
-                id: 1,
-                timeshtamp: "11.12.2003",
+                id: 0,
+                timeshtamp: '24.02.2023',
+                author: "test",
+                status: "close",
+                price: 300,
                 name: "Jane Cooper",
                 company: "Microsoft",
                 phone: "(255) 555-0118",
@@ -99,13 +98,9 @@ const globalState = hookstate({
                     name: "USA",
                     region: ""
                 },
-                status: false,
-                price: {
-                    currency: "USD",
-                    value: 500
-                },
                 description: "lorem ipsum sorem inu merol",
             },
+            
         ]
     },
     calendar: {},
