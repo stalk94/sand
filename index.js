@@ -144,6 +144,9 @@ app.post('/delColumn', (req, res)=> {
                     user.todo.column.splice(index, 1);
                 }
             });
+            user.todo.column.forEach((col, index) => {
+                user.todo.column[index].id = index + 1;
+            });
             db.set("users."+req.body.login, user);
         }
         res.send(user.todo);

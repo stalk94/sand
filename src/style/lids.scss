@@ -1,18 +1,12 @@
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    height: 100%;
-    background-color: rgb(164, 128, 80);
-    min-width: 200px;
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
 }
 
-.header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .lids__page {
@@ -25,12 +19,70 @@
     gap: 50px;
 }
 
+.sidebar {
+    height: 100%;
+    background-color: rgb(55, 53, 50);
+    min-width: 225px;
+    
+    .sidebar__container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+        padding: 25px;
+        height: 100%;
+    }
+
+    .sidebar__nav {
+        width: 100%;
+
+        .nav__title {
+            margin-bottom: 15px;
+        }
+
+        ul {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+    
+            .nav__item {
+                width: 100%;
+                button {
+                    width: 100%;
+                    padding: 10px 0px;
+                    border: 1px solid #454545;
+                    border-radius: 3px;
+                }
+            }
+        }
+
+        .create-item {
+            background-color: rgb(66, 98, 240);
+            width: 100%;
+            padding: 10px 0px;
+            border: 1px solid #3a3a3a;
+            border-radius: 3px;
+        }
+    }
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .customers-widget {
     width: 100%;
     height: fit-content;
     background-color: #FFFFFF;
     border-radius: 20px;
     padding: 40px;
+    overflow-y: auto;
 
     .widget__container {
         display: flex;
@@ -242,19 +294,19 @@
 
 }
 
-table {
+.table {
     width: 100%;
     border-collapse: collapse;
 }
 
-th, td {
+.table-cell {
     border: none;
     padding: 20px 0px;
     border-bottom: 1px solid rgba(238, 238, 238, 1);
 }
 
 .table__header {
-    tr {
+    .table-line {
         th {
             text-align: start;
             padding: 15px 0px;

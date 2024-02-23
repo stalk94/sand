@@ -30,20 +30,26 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
-            <ul className="sidebar__nav">
-                <li className="nav__item">
-                    ITEM
-                </li>
-                <li className="nav__item">
-                    ITEM
-                </li>
-                <li className="nav__item">
-                    ITEM
-                </li>
-                <li className="nav__item">
-                    ITEM
-                </li>
-            </ul>
+            <div className="sidebar__container">
+                <nav className="sidebar__nav">
+                    <h2 className="nav__title">Lid Groups</h2>
+                    <ul>
+                        <li className="nav__item">
+                            <button>ITEM</button>
+                        </li>
+                        <li className="nav__item">
+                            <button>ITEM</button>
+                        </li>
+                        <li className="nav__item">
+                            <button>ITEM</button>
+                        </li>
+                        <li className="nav__item">
+                            <button>ITEM</button>
+                        </li>
+                    </ul>
+                    <button className="create-item">Create new Group</button>
+                </nav>
+            </div>
         </div>
     )
 }
@@ -187,12 +193,12 @@ const TableHeader = () => {
     return (
         <thead className="table__header">
             <tr>
-                <th><CustomLabel text="Customer Name" style="gray" /></th>
-                <th><CustomLabel text="Company" style="gray" /></th>
-                <th><CustomLabel text="Phone Number" style="gray" /></th>
-                <th><CustomLabel text="Email" style="gray" /></th>
-                <th><CustomLabel text="Country" style="gray" /></th>
-                <th><CustomLabel text="Status" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Customer Name" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Company" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Phone Number" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Email" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Country" style="gray" /></th>
+                <th className="table-cell" ><CustomLabel text="Status" style="gray" /></th>
             </tr>
         </thead>
     )
@@ -201,12 +207,12 @@ const TableHeader = () => {
 const TableLine = () => {
     return (
         <tr className="table-line">
-            <td><CustomLabel text="Jane Cooper" style="weight__medium" /></td>
-            <td><CustomLabel text="Microsoft" style="weight__medium" /></td>
-            <td><CustomLabel text="(225) 555-0118" style="weight__medium" /></td>
-            <td><CustomLabel text="jane@microsoft.com" style="weight__medium" /></td>
-            <td><CustomLabel text="United States" style="weight__medium" /></td>
-            <td><CustomerButton/></td>
+            <td className="table-cell" ><CustomLabel text="Jane Cooper" style="weight__medium" /></td>
+            <td className="table-cell" ><CustomLabel text="Microsoft" style="weight__medium" /></td>
+            <td className="table-cell" ><CustomLabel text="(225) 555-0118" style="weight__medium" /></td>
+            <td className="table-cell" ><CustomLabel text="jane@microsoft.com" style="weight__medium" /></td>
+            <td className="table-cell" ><CustomLabel text="United States" style="weight__medium" /></td>
+            <td className="table-cell" ><CustomerButton/></td>
         </tr>
     )
 }

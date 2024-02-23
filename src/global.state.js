@@ -44,7 +44,70 @@ const globalState = hookstate({
             priorety: "star"
         }
     ],
-    lids: [],
+    lids: {
+        groups: [
+            "tractors",
+            "motors",
+            "flowers",
+            "food"
+        ],
+        customers: [
+            {
+                id: 1,
+                timeshtamp: "11.12.2003",
+                name: "Jane Cooper",
+                company: "Microsoft",
+                phone: "(255) 555-0118",
+                email: "jane@mickrosoft.com",
+                country: {
+                    name: "USA",
+                    region: ""
+                },
+                status: false,
+                price: {
+                    currency: "USD",
+                    value: 500
+                },
+                description: "lorem ipsum sorem inu merol",
+            },
+            {
+                id: 1,
+                timeshtamp: "11.12.2003",
+                name: "Jane Cooper",
+                company: "Microsoft",
+                phone: "(255) 555-0118",
+                email: "jane@mickrosoft.com",
+                country: {
+                    name: "USA",
+                    region: ""
+                },
+                status: false,
+                price: {
+                    currency: "USD",
+                    value: 500
+                },
+                description: "lorem ipsum sorem inu merol",
+            },
+            {
+                id: 1,
+                timeshtamp: "11.12.2003",
+                name: "Jane Cooper",
+                company: "Microsoft",
+                phone: "(255) 555-0118",
+                email: "jane@mickrosoft.com",
+                country: {
+                    name: "USA",
+                    region: ""
+                },
+                status: false,
+                price: {
+                    currency: "USD",
+                    value: 500
+                },
+                description: "lorem ipsum sorem inu merol",
+            },
+        ]
+    },
     calendar: {},
     stat: {
         

@@ -36,7 +36,7 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<ToDo/>);
+        setView(<Lids/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);
@@ -67,7 +67,7 @@ export default function BaseContainer() {
                     />
                 }
             />
-            <div style={{display:"flex",flexDirection:"row", height:"100%"}}>
+            <div style={{display:"flex",flexDirection:"row", height:"100%", overflow:"hidden"}}>
                 <ToolBar />
                 { view }
             </div>

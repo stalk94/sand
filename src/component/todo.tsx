@@ -43,7 +43,7 @@ export default function ToDo() {
     const [columns, setColumns] = useState<IColumn[]>(JSON.parse(JSON.stringify(todo.column.get())));
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
-    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), [todo.column]);
+    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), []);
 
     const setServerData = (path, data) => {
         fetchApi(path, data, (val) => {
@@ -57,7 +57,7 @@ export default function ToDo() {
             todo.set(data);
             setColumns(JSON.parse(JSON.stringify(todo.column.get())));
         });
-    }, [todo]);
+    }, []);
     
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -250,7 +250,7 @@ const Card = (props: {card: ICard}) => {
 
 const Column = (props: {column: IColumn, setData: Function}) => {
     const {column, setData} = props;
-    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [column])
+    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [])
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
         id: column.id,
