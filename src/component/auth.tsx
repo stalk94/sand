@@ -1,6 +1,7 @@
 import React from 'react';
 import { Responce } from "../lib/type";
 import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
 import "../style/auth.css";
 import { Button } from 'primereact/button';
 import globalState from "../global.state";
@@ -10,8 +11,8 @@ import { useInfoToolbar } from "../engineHooks";
 
 
 export default function Auth({onView}) {
-    const [login, setLogin] = React.useState<string>();
-    const [pass, setPass] = React.useState<string>();
+    const [login, setLogin] = React.useState<string>('');
+    const [pass, setPass] = React.useState<string>('');
 
 
     const serverFetch =()=> {
@@ -27,19 +28,24 @@ export default function Auth({onView}) {
     return(
         <div className='form'>
             <div className='formInput'>
-                <InputText 
-                    placeholder='Логин'
+                <var>Логин</var>
+                <InputText
+                    name='login' 
+                    placeholder='min 5 simbol'
                     value={login}
                     onChange={(ev)=> setLogin(ev.target.value)}
                 />
-                <InputText 
-                    placeholder='Пaроль'
+                <var>Пароль</var>
+                <input
+                    className='p-inputtext p-component'
+                    placeholder='min 6 simbol'
+                    type='password'
                     value={pass}
                     onChange={(ev)=> setPass(ev.target.value)}
                 />
             </div>
-            <Button 
-                label="Авьоризация" 
+            <Button style={{marginTop:"7%"}}
+                label="Авторизация" 
                 icon="pi pi-sign-out" 
                 iconPos="left" 
                 onClick={serverFetch}

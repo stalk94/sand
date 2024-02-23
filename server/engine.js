@@ -16,9 +16,12 @@ const getTime =()=> {
 exports.authVerifuToken =async(login, token)=> {
     if(login && token){
         let user = await db.get("users."+login);
-        delete user.password;
 
-        if(user && user.token && user.token===token) return user;
+        if(user && user.token && user.token===token) {
+            db.set("users."+login+'.online', true);
+            delete user.password;
+            return user;
+        }
         else return {error: "В доступе отказано invalid token"};
     }
     else return {error: "В доступе отказано"}
@@ -28,6 +31,7 @@ exports.authVerifu =async(login, password)=> {
         let user = await db.get("users."+login);
         if(user && user.password===password) {
             user.token = CryptoJS.AES.encrypt(new Date().getTime().toString(), 'test').toString();
+            user.online = true;
             await db.set("users."+login, user);
             delete user.password;
             return user;
@@ -36,7 +40,7 @@ exports.authVerifu =async(login, password)=> {
     }
     else return {error: "В доступе отказано invalid login or password"}
 }
-exports.createUser =async(login, pass, permision, author)=> {
+exports.createUser =async(login, pass, permision, color, author)=> {
     const user = await db.get("users."+author);
 
     if(user.permision!==0) return {error:"not permision"};
@@ -51,11 +55,12 @@ exports.createUser =async(login, pass, permision, author)=> {
                 password: pass,
                 token: "",
                 id: Object.keys(db.get("users")).length + 1,
+                intervalLoad: 7000,
                 online: false,
                 avatar: undefined,
                 massage: [],
                 permision: permision,
-                color: "#"+Math.floor(Math.random()*16777215).toString(16),
+                color: "#"+color,
                 todo: {
                     column: []
                 }

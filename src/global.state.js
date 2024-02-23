@@ -10,6 +10,8 @@ const globalState = hookstate({
         id: 0,
         online: true,
         avatar: undefined,
+        intervalLoad: 7000,
+        theme: 'luna-blue',
         massage: [{
             text: `DataTable responsive layout can be achieved in two ways; first approach `,
             author: "test",
@@ -33,7 +35,7 @@ const globalState = hookstate({
         {
             id: 0,
             name: "test",
-            timeshtamp: '24.07.2023',
+            timeshtamp: '24.02.2024',
             telephone: "+384940932343",
             category: "важные",
             author: "admin",
@@ -56,32 +58,53 @@ const globalState = hookstate({
             category: "важн",
             author: "test",
             priorety: "star"
+        },
+        {
+            id: 3,
+            name: "adm",
+            timeshtamp: '24.08.2023',
+            telephone: "+384940932343",
+            category: "важн",
+            author: "test2",
+            priorety: "star"
         }
     ],
     lids: [{
             id: 0,
-            timeshtamp: '24.07.2023',
+            timeshtamp: '24.02.2023',
             author: "test",
             status: "close",
             price: 300
         },{
             id: 1,
-            timeshtamp: '24.07.2023',
+            timeshtamp: '24.02.2024',
             author: "test",
+            status: "close",
+            price: 100
+        },{
+            id: 2,
+            timeshtamp: '24.02.2023',
+            author: "admin",
+            status: "close",
+            price: 200
+        },{
+            id: 3,
+            timeshtamp: '24.02.2024',
+            author: "admin",
             status: "filed",
-            price: 300
+            price: 800
         },{
-            id: 2,
-            timeshtamp: '24.07.2023',
-            author: "admin",
+            id: 4,
+            timeshtamp: '24.02.2024',
+            author: "admin2",
             status: "close",
-            price: 200
+            price: 2000
         },{
-            id: 2,
-            timeshtamp: '24.07.2023',
-            author: "admin",
+            id: 5,
+            timeshtamp: '24.03.2024',
+            author: "admin6",
             status: "close",
-            price: 200
+            price: 50
         }
 ],
     calendar: {},
@@ -96,7 +119,25 @@ const globalState = hookstate({
             permision: 1,
             avatar: undefined,
             online: true
-        }
+        },{
+            login: "test2",
+            color: "#"+Math.floor(Math.random()*16777215).toString(16),
+            permision: 1,
+            avatar: undefined,
+            online: true
+        },{
+            login: "admin2",
+            color: "#"+Math.floor(Math.random()*16777215).toString(16),
+            permision: 2,
+            avatar: undefined,
+            online: true
+        },{
+            login: "admin6",
+            color: "#"+Math.floor(Math.random()*16777215).toString(16),
+            permision: 1,
+            avatar: undefined,
+            online: true
+        },
     ]
 });
 

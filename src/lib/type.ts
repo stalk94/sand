@@ -68,7 +68,7 @@ export interface Lid {
     id: number
     timeshtamp: string
     author: string
-    status: string
+    status: 'close'|'filed'|'open'
     price: number
 }
 

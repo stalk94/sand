@@ -13,6 +13,8 @@ import { Password } from 'primereact/password';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
 import { FaRegEnvelope, FaRegEnvelopeOpen } from "react-icons/fa";
+import { IoSettingsOutline } from "react-icons/io5";
+import { FaInfo } from "react-icons/fa6";
 import { useToolbar, fetchApi, useInfoToolbar, encodeImageFileAsURL } from "../engineHooks";
 import { AddUser, SendMail } from "./modal.user";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
@@ -38,6 +40,8 @@ const LabelMassage =()=> {
 }
 const BasePanel =()=> {
     const state = useHookstate(globalState.user);
+    const [update, setUpdate] = React.useState(state.intervalLoad.get());
+    
     
     const readPassword:React.MouseEventHandler =(ev)=> {
         const cache = {old: "", password: ""};
@@ -47,8 +51,8 @@ const BasePanel =()=> {
             target: ev.currentTarget,
             message:
                 <>
-                    <Password placeholder="старый пароль" onChange={(event:React.ChangeEvent)=> cache.old = event.value} />
-                    <Password placeholder="новый пароль" onChange={(event:React.ChangeEvent)=> cache.password = event.value} />
+                    <Password feedback={false} placeholder="старый пароль" onChange={(event:React.ChangeEvent)=> cache.old = event.value} />
+                    <Password feedback={false} placeholder="новый пароль" onChange={(event:React.ChangeEvent)=> cache.password = event.value} />
                 </>,
             accept: ()=> fetchApi("readPassword", cache, (val:Responce|string)=> {
                 if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
@@ -56,12 +60,25 @@ const BasePanel =()=> {
             })
         });
     }
+    const useReadSettings =()=> {
+        const data = {
+            intervalLoad: update,
+        }
+
+        fetchApi("readSettings", data, (res:Responce|string)=> {
+            if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
+            else {
+                useInfoToolbar("sucess", 'Успешно', 'изменения приняты');
+                state.set(res);
+            }
+        });
+    }
 
 
     return(
         <>
             <ConfirmPopup />
-            <Fieldset legend="Данные">
+            <Fieldset legend={<div><FaInfo /> Данные</div>}>
                 <div>
                     id: { state.id.get() }
                 </div>
@@ -77,8 +94,23 @@ const BasePanel =()=> {
                     onClick={readPassword}
                 />
             </Fieldset>
-            <Fieldset legend="Статистика">
-
+            <Fieldset legend={<div><IoSettingsOutline /> Настройки</div>}>
+                <div style={{display:"flex",flexDirection:"row"}}>
+                    <div>автообновление(сек.): </div>
+                    <input  style={{width:"50px",marginLeft:"2%"}}
+                        onChange={(ev=> setUpdate(ev.target.value*1000))}
+                        type='number'
+                        max={20}
+                        min={3}
+                        value={update/1000}
+                    />
+                </div>
+                <Button className="p-button-outlined"
+                    style={{marginTop:"3%"}}
+                    icon="pi pi-save"
+                    label="применить"
+                    onClick={useReadSettings}
+                />
             </Fieldset>
         </>
     );
@@ -107,6 +139,7 @@ const UserSettings =({userData})=> {
             </>
         );
     }
+    // доработать
     const admin =()=> {
         return(
             <>
@@ -145,7 +178,7 @@ const UserSettings =({userData})=> {
 export default function User() {
     const [view, setView] = React.useState<JSX.Element>();
     const [modal, setModal] = React.useState<string|undefined>();
-    const [curent, setCurent] = React.useState<'base'|'post'|'users'>('base');
+    const [curent, setCurent] = React.useState<'base'|'post'|'users'>('users');
     const users = useHookstate(globalState.users);
     const state = useHookstate(globalState.user);
 
@@ -173,6 +206,7 @@ export default function User() {
             <Button onClick={()=> setModal("addUser")} className="p-button-success" icon="pi pi-plus"/>
         );
     }
+    
     React.useEffect(()=> {
         const items = [{   
                 label: 'Анкета', 
@@ -204,7 +238,13 @@ export default function User() {
         else if(curent==="users") setView(
             <>
             <AddUser onView={modal==="addUser"?true:false} useView={setModal}/>
-            <DataTable header={header} style={{width:"100%"}} value={users.get()} rows={10} paginator>
+            <DataTable paginator
+                header={header} 
+                footer={<div>Пользователей всего: {users.get().length}</div>}
+                style={{width:"100%"}} 
+                value={users.get()} 
+                rows={10} 
+            >
                 <Column 
                     field="avatar" 
                     header="avatar"
@@ -247,7 +287,7 @@ export default function User() {
                 />
             </DataTable>
         );
-    }, [curent, modal]);
+    }, [curent, modal, state]);
     
 
     return(<>{ view }</>);

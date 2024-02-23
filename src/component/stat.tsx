@@ -12,12 +12,21 @@ import { useToolbar, getFilterContact, getFilterLids, getUseTime } from "../engi
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { useDidMount, useWillUnmount } from 'rooks';
+import { GiTakeMyMoney } from "react-icons/gi";
+import { FaRegHandshake } from "react-icons/fa6";
+import { FaRegStar, FaRegChartBar } from "react-icons/fa";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
 
+type ListLids = {
+    count: number
+    close: number
+    filed: number
+    price: number
+}
 
 
-const HeadBlock =({date,useDate})=> {
+const HeadBlock =({date, useDate})=> {
     const getUserList =()=> {
         const users = ["все"];
         globalState.users.get().forEach((user)=> users.push(user.login));
@@ -57,6 +66,11 @@ const HeadBlock =({date,useDate})=> {
 }
 const Checker =({data, value, useSetCurUser})=> {
     const [checked, setChek] = React.useState<boolean>(value);
+
+    React.useEffect(()=> {
+        setChek(value);
+    }, [value]);
+
 
     return(
         <ToggleButton 
@@ -299,40 +313,137 @@ const StatLids =({date, curentUser, useCurUser})=> {
         </div>
     );
 }
-const StatAll =({date})=> {
+/**
+ * 5 самых денежных
+ * 5 самых закрывающих
+ * 5 самых активных
+ */
+const StatAll =()=> {
+    const useRenderLidsPrice =()=> {
+        const res = [];
+        const list = getLids();
+        Object.keys(list).forEach((login)=> {
+            res.push({login: login, price: list[login].price})
+        });
+        res.sort((before, post)=> before.price - post.price);
+        res.reverse().slice(0, 5);
+        res.map((elem, index)=> elem.index = index+1);
 
-    const useTime =()=> {
-        let curmonth = '0';
-        month.forEach((elem, index)=> {
-            if(elem===date[0]){
-                if(index < 10) curmonth = `0${index}`;
-                else curmonth = index.toString();
-            }
+        return res;
+    }
+    const useRenderLidsClose =()=> {
+        const res = [];
+        const list = getLids();
+       
+        Object.keys(list).forEach((login)=> {
+            const oneProcent = 100/list[login].all;
+            res.push({login: login, close: (oneProcent * list[login].close), all: list[login].all})
+        });
+        res.sort((before, post)=> before.close - post.close);
+        res.reverse().slice(0, 5);
+        res.map((elem, index)=> elem.index = index+1);
+
+        return res;
+    }
+    const allActiv =()=> {
+        const users = {};
+        const res = [];
+        let month = (new Date().getMonth()+1) < 10 ? `.0${new Date().getMonth()+1}` : `.${new Date().getMonth()}`;
+        const lids = getFilterLids(`${month}.${new Date().getFullYear()}`);
+        const contacts = getFilterContact(`${month}.${new Date().getFullYear()}`);
+
+        
+        lids.forEach((lid)=> {
+            if(!users[lid.author]) users[lid.author] = {lids: 1, contacts: 0};
+            else users[lid.author].lids++
+        });
+        contacts.forEach((contact)=> {
+            if(!users[contact.author]) users[contact.author] = {lids: 0, contacts: 1};
+            else users[contact.author].contacts++
         });
 
-        let time = "";
-        if(date[0]!=="не выбрано") time = curmonth;
-        if(date[1]!=="не выбрано") time = time + `.${date[1]}`;
-        return time;
+        Object.keys(users).forEach((login)=> {
+            res.push({login: login, lids: users[login].lids, contacts: users[login].contacts})
+        });
+        res.sort((before, post)=> (before.lids + before.contacts) - (post.lids + post.contacts));
+        res.reverse().slice(0, 5);
+        res.map((elem, index)=> elem.index = index+1);
+        
+        return res;
     }
-    React.useEffect(()=> { 
-        const contacts = getFilterContact(getUseTime(date));
-        const lids = getFilterLids(getUseTime(date));
+    const getLids =()=> {
+        const users = {};
+        let month = (new Date().getMonth()+1) < 10 ? `.0${new Date().getMonth()+1}` : `.${new Date().getMonth()}`;
 
+        const lids = getFilterLids(`${month}.${new Date().getFullYear()}`);  // лиды за последний месяц
+        lids.forEach((lid)=> {
+            if(!users[lid.author]){
+                users[lid.author] = {count:0,all:0,close:0,filed:0,price:0};
+            }
 
-    }, [date]);
+            users[lid.author].count++;
+            if(lid.status==="close"){
+                users[lid.author].close++;
+                users[lid.author].price += lid.price;
+            }
+            else if(lid.status==="filed") users[lid.author].filed++;
+            users[lid.author].all++;
+        });
 
+        return users;
+    }
+    const getIndexSort =(data:any)=> {
+        if(data.index===1) return <div style={{color:"gold"}}>{data.index}</div>;
+        else if(data.index===2) return <div style={{color:"#93dbeb"}}>{data.index}</div>;
+        else if(data.index===3) return <div style={{color:"#f65f0e"}}>{data.index}</div>;
+        else return <div>{data.index}</div>;
+    }
 
     return(
         <div className='allContainer'>
-            
+            <div style={{marginLeft:"auto",marginRight:"auto",marginTop:"5px"}}>
+                <FaRegChartBar /> Показатели за текущий месяц
+            </div>
+            <DataTable
+                header={()=> <div><GiTakeMyMoney /> 5 самых результативных по прибыли</div>}
+                value={useRenderLidsPrice()}
+            >
+                <Column field='index' header='место' body={getIndexSort}/>
+                <Column field='login' header='пользователь'/>
+                <Column field='price' header='заработано'/>
+            </DataTable>
+
+            <DataTable
+                header={()=> <div><FaRegHandshake /> 5 самых результативных по закрытым сделкам</div>}
+                value={useRenderLidsClose()}
+            >
+                <Column field='index' header='место' body={getIndexSort}/>
+                <Column field='login' header='пользователь'/>
+                <Column field='close' 
+                    body={(data)=> <div>{data.close}%</div>} 
+                    header='% удачных сделок'
+                />
+                <Column field='all' header='из'/>
+            </DataTable>
+
+            <DataTable
+                header={()=> <div><FaRegStar /> 5 самых активных</div>}
+                value={allActiv()}
+            >
+                <Column field='index' header='место' body={getIndexSort}/>
+                <Column field='login' header='пользователь'/>
+                <Column field='lids' header='лидов'/>
+                <Column field='contacts' header='контактов'/>
+            </DataTable>
         </div>
     );
 }
 
 
+// при отмене выборки юзера сделать перерендер
 export default function Statistic() {
-    const [date, setDate]= React.useState(['не выбрано', 'не выбрано']);
+    const [viewHead, setViewHead] = React.useState<boolean>(true);
+    const [date, setDate] = React.useState(['не выбрано', 'не выбрано']);
     const [cur, setCur] = React.useState<'all'|'lids'|'contact'>("all");
     const [curentUser, setCurUser] = React.useState<Array<string>>([]);
     const [curView, setView] = React.useState<JSX.Element>();        
@@ -356,16 +467,29 @@ export default function Statistic() {
 
         useToolbar(<Menu style={{width:"20%"}} model={items}/>);
     });
+    const changeDate =(curDate)=> {
+        setCurUser([]);
+        setDate(curDate);
+    }
     React.useEffect(()=> {
-        if(cur==="contact") setView(<StatContact date={date} curentUser={curentUser} useCurUser={setCurUser}/>);
-        else if(cur==="lids") setView(<StatLids date={date} curentUser={curentUser} useCurUser={setCurUser}/>);
-        else if(cur==="all") setView(<StatAll date={date}/>);
+        if(cur==="contact") {
+            setViewHead(true);
+            setView(<StatContact date={date} curentUser={curentUser} useCurUser={setCurUser}/>);
+        }
+        else if(cur==="lids") {
+            setViewHead(true);
+            setView(<StatLids date={date} curentUser={curentUser} useCurUser={setCurUser}/>);
+        }
+        else if(cur==="all") {
+            setViewHead(false);
+            setView(<StatAll/>);
+        }
     }, [date, curentUser, cur]);
    
 
     return(
         <div style={{display:"flex",flexDirection:"column",width:"100%"}}>
-            <HeadBlock date={date} useDate={setDate}/>
+            { viewHead ? <HeadBlock date={date} useDate={changeDate}/> : "" }
             { curView }
         </div>
     );

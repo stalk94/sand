@@ -42,6 +42,29 @@ app.post('/auth', async(req, res)=> {
         });
     }
 });
+app.post('/getState', async(req, res)=> {
+    const userData = await authVerifu(req.body.login, req.body.pass);
+    
+    if(userData.error && prod!=="false") res.send(userData);
+    else {
+        const bdUsers = await db.get("users");
+        const users = [];
+        Object.values(bdUsers).forEach((user)=> {
+            delete user.password;
+            delete user.token;
+            users.push(user);
+        });
+
+        res.send({
+            user: userData,
+            contacts: await db.get("contacts"),
+            lids: await db.get("lids"),
+            cooper: await db.get("cooper"),
+            logo: await db.get("logo"),
+            users: users
+        });
+    }
+});
 app.post('/readPassword', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
 
@@ -224,7 +247,7 @@ app.post('/addUser', async(req, res)=> {
 
     if(verifu.error && prod!=="false") res.send(verifu);
     else {
-        const create = await createUser(req.body.userLogin, req.body.password, req.body.permision, req.body.login);
+        const create = await createUser(req.body.userLogin, req.body.password, req.body.permision, req.body.color, req.body.login);
         if(!create.error){
             const usersData = await db.get("users");
             const users = [];
@@ -262,9 +285,34 @@ app.post('/readStatusMail', async(req, res)=> {
         else res.send({error:'error index massage'});
     }
 });
+app.post('/exit', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = await db.get("users."+req.body.login);
+        user.online = false;
+        db.set('users.'+verifu.login, user);
+        res.send(verifu);
+        console.log(req.body.login + ' offline')
+    }
+});
+app.post('/readSettings', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+
+    if(verifu.error) res.send(verifu);
+    else {
+        if(req.body.intervalLoad > 1000 && req.body.intervalLoad < 20000) {
+            await db.set("users."+req.body.login+".intervalLoad", req.body.intervalLoad);
+            verifu.intervalLoad = req.body.intervalLoad;
+            res.send(verifu);
+        }
+    }
+});
 
 
 
 
+db.get("users.test").then(console.log)
 app.use('/', express.static(path.join(__dirname, '/dist')));
 server.listen(3000, ()=> useMemory());

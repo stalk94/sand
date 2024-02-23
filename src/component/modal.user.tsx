@@ -5,18 +5,20 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
+import { ColorPicker } from 'primereact/colorpicker';
 import { useInfoToolbar, fetchApi } from "../engineHooks";
 const permisions = ["💼 Админ", "🛒 Продавец"];
 
 
 export function AddUser({onView, useView}) {
     const [login, setLogin] = React.useState<string>();
+    const [color, setColor] = React.useState<string>(Math.floor(Math.random()*16777215).toString(16));
     const [permision, setPermision] = React.useState<string>("🛒 Продавец");
     const [password, setPassword] = React.useState<string>();
    
 
     const addUser =()=> {
-        fetchApi("addUser", {userLogin:login,password:password,permision:permision==="💼 Админ"?1:2}, (res)=> {
+        fetchApi("addUser", {userLogin:login,password:password,permision:permision==="💼 Админ"?1:2,color:color}, (res)=> {
             if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
             else {
                 globalState.users.set(res);
@@ -60,6 +62,10 @@ export function AddUser({onView, useView}) {
                 <div className="field">
                     <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">password</label>
                     <InputText name="password" value={password} onChange={useDataInput} placeholder='min 6'/>
+                </div>
+                <div className="field">
+                    <label style={{marginLeft:"5px",color:"gray"}} htmlFor="perm">цвет(для статистики)</label>
+                    <ColorPicker style={{marginLeft:"5px",color:"gray"}} value={color} onChange={(e)=> setColor(e.value)} />
                 </div>
             </div>
         </Dialog>
