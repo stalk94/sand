@@ -13,6 +13,8 @@ import { useDidMount } from 'rooks';
 import { Toast } from 'primereact/toast';
 import { PrimeReactProvider } from 'primereact/api';
 
+
+
 const icon = {
     sucess: "✔️",
     error: "🛑",
@@ -25,6 +27,7 @@ function App() {
     const state = useHookstate(globalState);
     const toast = React.useRef(null);
 
+    
     const useViev =()=> setView(<Base/>);
     const showToast =(type, title, text)=> {
         toast.current.show({
@@ -39,7 +42,7 @@ function App() {
         if(state.user.get() && state.user.login.get()) setView(<Base/>);
         else setView(<Auth onView={useViev}/>);
     });
-
+    
 
     return(
         <>
