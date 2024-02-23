@@ -11,7 +11,6 @@ const globalState = hookstate({
         online: true,
         avatar: undefined,
         intervalLoad: 7000,
-        theme: 'luna-blue',
         massage: [{
             text: `DataTable responsive layout can be achieved in two ways; first approach `,
             author: "test",

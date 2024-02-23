@@ -1,5 +1,6 @@
 import "../style/modal.css";
 import React from 'react';
+import { User } from "../lib/type";
 import globalState from "../global.state";
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -9,8 +10,14 @@ import { ColorPicker } from 'primereact/colorpicker';
 import { useInfoToolbar, fetchApi } from "../engineHooks";
 const permisions = ["💼 Админ", "🛒 Продавец"];
 
+type SendMailProps = {
+    onView: boolean 
+    useView: ()=> void
+    user: User
+}
 
-export function AddUser({onView, useView}) {
+
+export function AddUser({onView, useView}: {onView: boolean, useView:()=> void}) {
     const [login, setLogin] = React.useState<string>();
     const [color, setColor] = React.useState<string>(Math.floor(Math.random()*16777215).toString(16));
     const [permision, setPermision] = React.useState<string>("🛒 Продавец");
@@ -18,7 +25,14 @@ export function AddUser({onView, useView}) {
    
 
     const addUser =()=> {
-        fetchApi("addUser", {userLogin:login,password:password,permision:permision==="💼 Админ"?1:2,color:color}, (res)=> {
+        const reqData = {
+            userLogin: login,
+            password: password,
+            permision: permision==="💼 Админ" ? 1 : 2,
+            color :color
+        }
+
+        fetchApi("addUser", reqData, (res)=> {
             if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
             else {
                 globalState.users.set(res);
@@ -71,8 +85,7 @@ export function AddUser({onView, useView}) {
         </Dialog>
     );
 }
-
-export function SendMail({onView, useView, user}) {
+export function SendMail({onView, useView, user}: SendMailProps) {
     const [msg, setMsg] = React.useState<string>();
    
     const sendMail =()=> {

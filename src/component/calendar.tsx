@@ -1,3 +1,4 @@
+import "../style/calendar.css";
 import React from "react";
 import globalState from "../global.state";
 import { EventCalendar, Day } from "../lib/type";
@@ -8,7 +9,6 @@ import { Button } from 'primereact/button';
 import { Menu } from 'primereact/menu';
 import { useDidMount, useWillUnmount } from 'rooks';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import "../style/calendar.css";
 
 
 const testEvent = [{
@@ -22,12 +22,20 @@ const testEvent = [{
         text: "..."
     }
 }];
+type CellProps = {
+    events: Array<EventCalendar>
+    day: Day
+    date: Array<number>
+}
+type DateCalendarProps = {
+    curentDate: Array<number>
+    useDate: React.Dispatch<React.SetStateAction<number[]>>
+}
 
 
-
-export const DateCalendarPicker =({curentDate, useDate})=> {
+export const DateCalendarPicker =({curentDate, useDate}: DateCalendarProps)=> {
     const month = ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
-    const [arrYear, setArrYear] = React.useState([]);
+    const [arrYear, setArrYear] = React.useState<Array<number>>([]);
 
     useDidMount(()=> {
         const arr = [curentDate[0]];
@@ -71,8 +79,8 @@ const GridWeek =()=> {
         </div>
     );
 }
-const Cell =({events, day, date})=> {
-    const useClickEvent =(eventCur:EventCalendar)=> {
+const Cell =({events, day, date}: CellProps)=> {
+    const useClickEvent =(eventCur: EventCalendar)=> {
         EVENT.emit("clickEvent", {date:[...date, day.day], event:eventCur});
     }
     const useClickCell:React.MouseEventHandler =(ev)=> {
@@ -99,7 +107,7 @@ const Cell =({events, day, date})=> {
         </div>
     );
 }
-const GridCalendar =({date})=> {
+const GridCalendar =({date}: {date: Array<number>})=> {
     const [gridData, setGridData] = React.useState(getDays(date[0], date[1]));
     const [data, setData] = React.useState<Array<EventCalendar>>(testEvent);
    
@@ -109,15 +117,15 @@ const GridCalendar =({date})=> {
             else setData(res);
         });
     }
-    const useEvent =(day:Day)=> {
+    const useEvent =(day: Day)=> {
         const result = [];
-        data.forEach((event:EventCalendar)=> {
+        data.forEach((event: EventCalendar)=> {
             if(day.day===event.day) result.push(event);
         });
  
         return result;
     }
-    const useFiltre =(req:{type:string})=> {
+    const useFiltre =(req:{type: string})=> {
         if(req.type==="myEvent") setData((events)=> 
             events.filter((ev)=> ev.to===globalState.user.login.get() && ev 
         ));
@@ -147,7 +155,7 @@ const GridCalendar =({date})=> {
         <div style={{display:"grid", width:"100%", height:"100%"}}>
             {gridData.map((chank, index:number)=> {
                 return <div key={index} className="base">
-                    {chank.map((day:Day, indexDay:number)=> {
+                    {chank.map((day: Day, indexDay: number)=> {
                         if(day===null) return <div key={indexDay} className="nullRow"></div>
                         else return <Cell events={useEvent(day)} key={indexDay} date={date} day={day}/>
                     })}

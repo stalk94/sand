@@ -1,8 +1,7 @@
+import "../style/auth.css";
 import React from 'react';
 import { Responce } from "../lib/type";
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
-import "../style/auth.css";
 import { Button } from 'primereact/button';
 import globalState from "../global.state";
 import { useInfoToolbar } from "../engineHooks";

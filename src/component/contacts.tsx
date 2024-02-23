@@ -33,7 +33,7 @@ const dropDown = [
 
 
 
-const AddContact =({useCache})=> {
+const AddContact =({useCache}: {useCache: (values: Contact)=> void})=> {
     const [state, setState] = React.useState<Contact>({});
 
     const setVal:React.ChangeEventHandler =(ev)=> {
@@ -42,7 +42,6 @@ const AddContact =({useCache})=> {
             return old
         });
         useCache(state);
-        console.log(state);
     }
 
 
@@ -64,7 +63,7 @@ export default function ContactData() {
     const [state, setState] = React.useState(globalState.contacts.get());
     
     // важный хук, Отсылает данные на сервер и обновляет global state
-    const setServerData =(path:string, data:object)=> {
+    const setServerData =(path: string, data: object)=> {
         fetchApi(path, data, (val)=> {
             if(val.error) useInfoToolbar("error", 'Ошибка', val.error);
             else {
@@ -73,7 +72,7 @@ export default function ContactData() {
             };
         });
     }
-    const useAction =(action:Action, detail:Contact, ev:React.MouseEvent)=> {
+    const useAction =(action: Action, detail: Contact, ev: React.MouseEvent)=> {
         if(action==='readTel') {
             let cache = detail.telephone;
             confirmPopup({
@@ -126,7 +125,7 @@ export default function ContactData() {
             accept: ()=> setServerData('addContact', cache)
         });
     }
-    const filtre =(type:"author"|"category", detail:string)=> {
+    const filtre =(type: "author"|"category", detail: string)=> {
         if(type==="category"){
             setState((state)=> {
                 let newState = state.filter((elem)=> elem.category===detail);

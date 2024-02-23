@@ -1,6 +1,6 @@
 import React from 'react';
 import "../style/stat.css";
-import { Lid, DataRenderContact, DataRenderLid } from "../lib/type";
+import { Lid, DataRenderContact, DataRenderLid, Contact } from "../lib/type";
 import globalState from "../global.state";
 import { Dropdown } from 'primereact/dropdown';
 import { DataTable } from 'primereact/datatable';
@@ -11,22 +11,40 @@ import { SelectButton } from 'primereact/selectbutton';
 import { useToolbar, getFilterContact, getFilterLids, getUseTime } from "../engineHooks";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { useDidMount, useWillUnmount } from 'rooks';
+import { useDidMount } from 'rooks';
 import { GiTakeMyMoney } from "react-icons/gi";
 import { FaRegHandshake } from "react-icons/fa6";
 import { FaRegStar, FaRegChartBar } from "react-icons/fa";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
 
-type ListLids = {
-    count: number
-    close: number
-    filed: number
-    price: number
+type Stat = {
+    date: Array<string|number>
+    curentUser: Array<string>
+    useCurUser: React.Dispatch<React.SetStateAction<string[]>>
+}
+type StatContactProps = {
+    data: Array<Contact>
+    curentUser: Array<string>
+    useCurUser: React.Dispatch<React.SetStateAction<string[]>>
+}
+type StatLidsProps = {
+    data: Array<Lid>
+    curentUser: Array<string>
+    useCurUser: React.Dispatch<React.SetStateAction<string[]>>
+}
+type CheckerProps = {
+    data: DataRenderLid
+    value: boolean
+    useSetCurUser: (elem:ToggleButtonChangeEvent, data:DataRenderLid)=> void
+}
+type HeadBlockProps = {
+    date: Array<string|number>
+    useDate: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 
-const HeadBlock =({date, useDate})=> {
+const HeadBlock =({date, useDate}: HeadBlockProps)=> {
     const getUserList =()=> {
         const users = ["все"];
         globalState.users.get().forEach((user)=> users.push(user.login));
@@ -64,12 +82,10 @@ const HeadBlock =({date, useDate})=> {
         </div>
     );
 }
-const Checker =({data, value, useSetCurUser})=> {
+const Checker =({data, value, useSetCurUser}: CheckerProps)=> {
     const [checked, setChek] = React.useState<boolean>(value);
 
-    React.useEffect(()=> {
-        setChek(value);
-    }, [value]);
+    React.useEffect(()=> setChek(value), [value]);
 
 
     return(
@@ -83,9 +99,9 @@ const Checker =({data, value, useSetCurUser})=> {
                 useSetCurUser(e, data);
             }} 
         />
-    )
+    );
 }
-const ListStatContact =({data, useCurUser, curentUser})=> {
+const ListStatContact =({data, useCurUser, curentUser}: StatContactProps)=> {
     const [render, setRender] = React.useState<Array<DataRenderContact>>([]);
 
     const useSetCurUser =(elem:ToggleButtonChangeEvent, data:DataRenderContact)=> {
@@ -128,10 +144,10 @@ const ListStatContact =({data, useCurUser, curentUser})=> {
         </DataTable>
     );
 }
-const ListStatLids =({data, useCurUser, curentUser})=> {
+const ListStatLids =({data, useCurUser, curentUser}: StatLidsProps)=> {
     const [render, setRender] = React.useState<Array<DataRenderLid>>([]);
 
-    const useSetCurUser =(elem:ToggleButtonChangeEvent, data:DataRenderLid)=> {
+    const useSetCurUser =(elem: ToggleButtonChangeEvent, data: DataRenderLid)=> {
         if(elem.value===false){
             curentUser.forEach((name, index)=> {
                 if(name===data.name) curentUser.splice(index, 1);
@@ -140,7 +156,7 @@ const ListStatLids =({data, useCurUser, curentUser})=> {
         }
         else useCurUser([...curentUser, data.name]);
     }
-    const useValue =(rowData:DataRenderLid)=> {
+    const useValue =(rowData: DataRenderLid)=> {
         if(curentUser.find((elem: string)=> elem===rowData.name)) return true;
         else return false;
     }
@@ -181,7 +197,7 @@ const ListStatLids =({data, useCurUser, curentUser})=> {
             <Column field="close" header="закр." sortable/>
             <Column field="filed" header="провал." sortable/>
             <Column field="price" header="доход" sortable/>
-            <Column body={(rowData)=> 
+            <Column body={(rowData: DataRenderLid)=> 
                 <Checker data={rowData} value={useValue(rowData)} useSetCurUser={useSetCurUser}/>
             }
             />
@@ -189,8 +205,8 @@ const ListStatLids =({data, useCurUser, curentUser})=> {
     );
 }
 
-const StatContact =({date, curentUser, useCurUser})=> {
-    const [curView, setView] = React.useState();
+const StatContact =({date, curentUser, useCurUser}: Stat)=> {
+    const [curView, setView] = React.useState<JSX.Element>();
     
     const useFilter =()=> {
         if(curentUser.length > 0) {
@@ -229,17 +245,17 @@ const StatContact =({date, curentUser, useCurUser})=> {
         );
     }, [date, curentUser]);
     
-
+    
     return(
         <div style={{marginTop:"4%"}}>
             { curView }
         </div>
     );
 }
-const StatLids =({date, curentUser, useCurUser})=> {
+const StatLids =({date, curentUser, useCurUser}: Stat)=> {
     const category = [{icon:"pi pi-list",value:'all'},{icon:"pi pi-dollar",value:'price'},{icon:"pi pi-lock",value:'close'},{icon:"pi pi-times",value:'filed'}];
-    const [curCategory, setCategory] = React.useState('all');
-    const [curView, setView] = React.useState();
+    const [curCategory, setCategory] = React.useState<'all'|'price'|'close'|'filed'>('all');
+    const [curView, setView] = React.useState<JSX.Element>();
 
     const useFilter =()=> {
         if(curentUser.length > 0) {
@@ -313,11 +329,6 @@ const StatLids =({date, curentUser, useCurUser})=> {
         </div>
     );
 }
-/**
- * 5 самых денежных
- * 5 самых закрывающих
- * 5 самых активных
- */
 const StatAll =()=> {
     const useRenderLidsPrice =()=> {
         const res = [];
@@ -392,7 +403,7 @@ const StatAll =()=> {
 
         return users;
     }
-    const getIndexSort =(data:any)=> {
+    const getIndexSort =(data: any)=> {
         if(data.index===1) return <div style={{color:"gold"}}>{data.index}</div>;
         else if(data.index===2) return <div style={{color:"#93dbeb"}}>{data.index}</div>;
         else if(data.index===3) return <div style={{color:"#f65f0e"}}>{data.index}</div>;

@@ -1,6 +1,6 @@
 import "../style/user.css";
 import React from 'react';
-import { Responce, Massage } from "../lib/type";
+import { Responce, Massage, Log } from "../lib/type";
 import { useHookstate } from '@hookstate/core';
 import globalState from "../global.state";
 import { Card } from 'primereact/card';
@@ -21,15 +21,15 @@ import { useToolbar, fetchApi, useInfoToolbar, encodeImageFileAsURL } from "../e
 import { AddUser, SendMail } from "./modal.user";
 import { useDidMount } from "rooks";
 const permision = ["👑 Главный админ", "💼 Админ", "🛒 Продавец"];
- 
+
 
 const Logs =()=> {
-    const [logs, setLogs] = React.useState([]);
+    const [logs, setLogs] = React.useState<Array<Log>>([]);
 
-    const getColor =(data)=> {
-        if(data.type==='system crash') return "red";
+    const getColor =(data: Log)=> {
+        if(data.type==='system crash') return 'red';
         else if(data.type==='critical') return '#f9d55d';
-        else return 'grey'
+        else return 'grey';
     }
     useDidMount(()=> {
         fetchApi("getLogs", {type:'error'}, (res)=> {
@@ -37,7 +37,7 @@ const Logs =()=> {
             else setLogs(res);
         });
     });
-
+    
 
     return(
             <DataTable paginator
@@ -168,6 +168,7 @@ const UserSettings =({userData})=> {
     const [modal, setModal] = React.useState<"edit"|"post"|"ban"|undefined>();
     const state = useHookstate(globalState.user);
 
+
     const glavAdmin =()=> {
         return(
             <>
@@ -224,20 +225,20 @@ const UserSettings =({userData})=> {
 
 
 
-export default function User() {
+export default function UserContainer() {
     const [view, setView] = React.useState<JSX.Element>();
     const [modal, setModal] = React.useState<string|undefined>();
     const [curent, setCurent] = React.useState<'base'|'post'|'users'|'logs'>('users');
     const users = useHookstate(globalState.users);
     const state = useHookstate(globalState.user);
 
-    const setMassageStatus =(massage:Massage)=> {
+    const setMassageStatus =(massage: Massage)=> {
         fetchApi("readStatusMail", {msg:massage}, (res)=> {
             if(res.error) useInfoToolbar("error", 'Ошибка', res.error);
             else state.massage.set(res);
         });
     }
-    const loadAvatar =(data:string)=> {
+    const loadAvatar =(data: string)=> {
         const req = {data:data, format:'png'};
         if(data.includes('image/jpeg')) req.format = 'jpg';
         else if(data.includes('image/png')) req.format = 'png';

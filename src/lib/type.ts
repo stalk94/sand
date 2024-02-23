@@ -17,6 +17,8 @@ export interface User {
     login: string
     token: string
     id: number
+    online: boolean
+    intervalLoad: number
     avatar: string|undefined
     color: string
     permision: 0|1|2
@@ -84,3 +86,12 @@ export type DataRenderLid = {
     filed: number
     price: number
 }
+
+export type Log = {
+    type: string
+    msg: string
+    timeshtamp: {
+        data: string
+        time: string
+    }
+};
