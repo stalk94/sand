@@ -8,7 +8,7 @@ import _ from "lodash";
  * Левая панель инструментов. Удобно использовать в useEffect
  * @param children элементы которые мы хотим отобразить. Если ничего не передается в аргумент то панель не показываеться
  */
-export function useToolbar(children:JSX.Element|string|undefined) {
+export function useToolbar(children?:JSX.Element|string) {
     EVENT.emit("toolbar", children);
 }
 
@@ -34,7 +34,7 @@ export function useInfoToolbar(type:"error"|"sucess"|"warn", title:string, text:
  * @param data 
  * @param callback 
  */
-export function fetchApi(url:string, data:any, callback:Function|undefined) {
+export function fetchApi(url:string, data:any, callback?:Function) {
     if(url && globalState.user) {
         let call = callback;
         if(url==="addColumn" || url==="readTodo" || url==="delTodo"){
@@ -68,7 +68,7 @@ export function loadToCsv(data:Array<object>) {
  * @param toObj разбирать в массив обьектов (true), в массив массивов (false)
  * @returns 
  */
-export function csvToJson(data:string, toObj:boolean|undefined): object|[]|void {
+export function csvToJson(data:string, toObj?:boolean): object|[]|void {
     const result = parse(data, {header: toObj??true});
     if(result.errors.length===0) return result.data;
     else useInfoToolbar("error", "Error import", result.errors.join());
@@ -147,7 +147,7 @@ export function getDays(year:number, month:number): Array<Array<{day:number,week
  * @param time 
  * @returns 
  */
-export function getFilterContact(time:string|undefined, userLogin:string|undefined) {
+export function getFilterContact(time?:string, userLogin?:string) {
     let contacts = globalState.contacts.get();
     if(userLogin) contacts = contacts.filter((element)=> element.author===userLogin && element);
    
@@ -166,7 +166,7 @@ export function getFilterContact(time:string|undefined, userLogin:string|undefin
  * @param time 
  * @returns 
  */
-export function getFilterLids(time:string|undefined, userLogin:string|undefined) {
+export function getFilterLids(time?:string, userLogin?:string) {
     let lids = globalState.lids.get();
     if(userLogin) lids = lids.filter((element)=> element.author===userLogin && element);
 
@@ -177,7 +177,7 @@ export function getFilterLids(time:string|undefined, userLogin:string|undefined)
 }
 
 
-export function getUseTime(date:Array<number|string>) {
+export function getUseTime(date:Array<number|string>): string {
     const month = ["не выбрано","январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
     
     let curmonth = '.0';
@@ -195,7 +195,7 @@ export function getUseTime(date:Array<number|string>) {
 }
 
 
-export function getMemory() {
+export function getMemory(): void {
     const formatMemoryUsage =(data)=> `${Math.round(data / 1024 / 1024 * 100) / 100} MB`;
     console.log(`
         totalHeap: ${formatMemoryUsage(window.performance.memory.totalJSHeapSize)}

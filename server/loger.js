@@ -1,5 +1,5 @@
-const pinoms = require('pino-multi-stream');
 const { db } = require("./engine");
+
 
 const getMonth =()=> {
     const month = new Date().getMonth();
@@ -45,13 +45,3 @@ globalThis.logger = {
 
 
 process.on("uncaughtException", (err)=> logger.error(err, 'system crash'));
-/**
- * const prettyStream = pinoms.prettyStream({
-    prettyPrint:{ 
-        colorize: true,
-        translateTime: "SYS:standard",
-        ignore: "hostname,pid"
-    }
-});
-globalThis.logger = pinoms(pinoms.multistream([{stream: fs.createWriteStream('log.log')},{stream: prettyStream}]));
- */

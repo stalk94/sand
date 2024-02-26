@@ -2,11 +2,11 @@ import EventEmiter from "./emiter";
 import store, { useLocalStorage } from "./rxStorage";
 
 
-window.gurl = 'http://localhost:3000/';
-window.STORE = store.init(useLocalStorage());
-window.EVENT = new EventEmiter();
+globalThis.gurl = 'http://localhost:3000/';
+globalThis.STORE = store.init(useLocalStorage());
+globalThis.EVENT = new EventEmiter();
 
-window.send = async function(url, data, metod) {
+globalThis.send = async function(url, data, metod) {
     let dataServer = {
         method: metod ?? 'POST',
         credentials: 'same-origin',
@@ -16,6 +16,6 @@ window.send = async function(url, data, metod) {
     }
     if(metod!=='GET') dataServer.body = JSON.stringify(data);
 
-    const request = await fetch(window.gurl + url, dataServer);
+    const request = await fetch(gurl + url, dataServer);
     return request.json();
 }

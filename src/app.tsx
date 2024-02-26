@@ -11,6 +11,7 @@ import { Badge } from 'primereact/badge';
 import { useDidMount, useIntervalWhen } from 'rooks';
 import { encodeImageFileAsURL, fetchApi, useInfoToolbar, getMemory } from "./engineHooks";
 import ToDo from './component/todo';
+import Chat from "./component/chat";
 import Calendar from "./component/calendar";
 
 
@@ -34,9 +35,9 @@ const EventBadge =()=> {
 
 export default function BaseContainer() {
     const state = useHookstate(globalState);
-    const [view, setView] = React.useState();
+    const [view, setView] = React.useState<JSX.Element>();
     
-    getMemory();
+
     const useLoadLogo =()=> {
         if(state.user.permision.get()===0) encodeImageFileAsURL((result)=> {
             fetchApi("readBaseCrmData", {logo: result}, (responce)=> {
@@ -46,28 +47,28 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<User/>);
+        setView(<User />);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
-            let target = ev.target.textContent;
-            if(target==='Контакты') setView(<ContactData useViev={setView}/>);
-            else if(target==='Планировщик') setView(<ToDo />);
-            else if(target==="Календарь") setView(<Calendar />);
-            else if(target==="Статистика") setView(<Stat/>);
-            else if(target==="Лиды") setView();
+            if(ev.target.textContent==='Контакты') setView(<ContactData />);
+            else if(ev.target.textContent==='Планировщик') setView(<ToDo />);
+            else if(ev.target.textContent==="Календарь") setView(<Calendar />);
+            else if(ev.target.textContent==="Статистика") setView(<Stat />);
+            else if(ev.target.textContent==="Лиды") setView();
             else setView();
         });
-        
     });
     useIntervalWhen(()=> {
         fetchApi("getState", {}, (res)=> {
             if(res.error) useInfoToolbar("error", "Error", res.error);
             else state.set(res);
         });
+        getMemory();
     }, state.user.intervalLoad.get() ?? 7000, false);
 
     
     return(
         <React.Fragment>
+            <Chat />
             <Menubar 
                 model={navigation}
                 start={ 
@@ -94,7 +95,8 @@ export default function BaseContainer() {
     );
 }
 
-/**
+
+/**  ! В продакшене врубить
  * window.onbeforeunload =(event)=> { 
             event.preventDefault(); 
             fetchApi("exit", {}, (res)=> {

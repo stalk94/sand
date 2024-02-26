@@ -240,7 +240,15 @@ app.post('/delCard', async(req, res)=> {
         res.send(user.todo);
     }
 });
-
+app.post('/getTodo', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = await db.get("users."+req.body.login);
+        res.send(user.todo);
+    }
+});
 
 app.post("/getCalendar", async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
@@ -362,7 +370,7 @@ app.post('/exit', async(req, res)=> {
         user.online = false;
         db.set('users.'+verifu.login, user);
         res.send(verifu);
-        logger.info(req.body.login + ' offline')
+        logger.info(req.body.login + ' offline');
     }
 });
 app.post('/readSettings', async(req, res)=> {
