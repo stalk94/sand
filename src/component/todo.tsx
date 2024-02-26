@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import globalState from "../global.state";
-import { ImmutableArray, useHookstate } from '@hookstate/core';
+import { useHookstate } from '@hookstate/core';
 import { fetchApi, useInfoToolbar } from "../engineHooks";
 import { 
     DndContext, 
-    useDroppable, 
-    useDraggable, 
     DragStartEvent, 
     DragOverlay, 
     DragOverEvent, 
@@ -17,7 +15,6 @@ import {
 } from "@dnd-kit/core"
 import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { createPortal } from "react-dom";
 
 import "./../style/todo.scss";
 import { useDidMount } from "rooks";
@@ -44,7 +41,7 @@ export default function ToDo() {
     const [columns, setColumns] = useState<IColumn[]>(JSON.parse(JSON.stringify(todo.column.get())));
     const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
     const [activeCard, setActiveCard] = useState<ICard | null>(null);
-    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), [todo.column]);
+    const columnIdes = useMemo(() => todo.column.get().map((col) => col.id), [todo.column, columns]);
 
     const setServerData = (path, data) => {
         fetchApi(path, data, (val) => {
@@ -53,16 +50,16 @@ export default function ToDo() {
         });
     }
 
+    
+    useEffect(() => {
+        setColumns(JSON.parse(JSON.stringify(todo.column.get())));
+    }, [todo]);
+    
     useDidMount(() => {
         fetchApi("getTodo", {}, (data) => {
             todo.set(data);
         })
     });
-
-    useEffect(() => {
-        setColumns(JSON.parse(JSON.stringify(todo.column.get())));
-    }, [todo]);
-
     
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -88,6 +85,63 @@ export default function ToDo() {
         const dragObj = event.active.data.current;
         if (dragObj?.type === "Column") setActiveColumn(dragObj?.column)
         if (dragObj?.type === "Card") setActiveCard(dragObj?.card)
+    }
+
+    const onDragOver = (event: DragOverEvent, setData: Function) => {
+        const dragObj = event.active.data.current;
+        const { active, over } = event;
+
+        if (!over) return;
+
+        if (active.id === over.id) return;
+
+        const isActiveACard = active.data.current?.type === "Card";
+        const isOverACard = over.data.current?.type === "Card";
+
+        if (!isActiveACard) return;
+
+        if (isActiveACard && isOverACard) {
+            const activeParentId = active.data.current?.card.parentId; 
+            const overParentId = over.data.current?.card.parentId; 
+
+            if (activeParentId !== overParentId) {
+                setColumns((columns) => {
+                    columns[activeParentId - 1].cards.splice(active.data.current?.card.index - 1, 1);
+                    columns[activeParentId - 1].cards = columns[activeParentId - 1].cards.map((card, index) => {
+                        card.index = index + 1;
+                        return card;
+                    });
+                    active.data.current!.card.parentId = overParentId;
+                    columns[overParentId - 1].cards.splice(over.data.current?.card.index - 1, 0, active.data.current!.card);
+                    columns[overParentId - 1].cards = columns[overParentId - 1].cards.map((card, index) => {
+                        card.index = index + 1
+                        return card;
+                    });
+                    return columns;
+                });
+            }
+        }
+
+        const isOverAColumn = over.data.current?.type === "Column";
+
+        if (isActiveACard && isOverAColumn) {
+            const activeParentId = active.data.current?.card.parentId; 
+            const overParentId = over.data.current?.column.id;
+
+            setColumns((columns) => {
+                columns[activeParentId - 1].cards.splice(active.data.current?.card.index - 1, 1);
+                columns[activeParentId - 1].cards = columns[activeParentId - 1].cards.map((card, index) => {
+                    card.index = index + 1;
+                    return card;
+                });
+                active.data.current!.card.parentId = overParentId;
+                active.data.current!.card.index = columns[overParentId - 1].cards.length + 1;
+                columns[overParentId - 1].cards.splice(active.data.current!.card.index, 0, active.data.current!.card);
+                
+                return columns;
+            });
+            console.log(columns);
+        }
     }
 
     const onDragEnd = (event: DragEndEvent, setData: Function) => {
@@ -116,12 +170,35 @@ export default function ToDo() {
 
 
         if (dragObj?.type === "Card") {
-            const activeCardId = active.id; 
-            const overCardId = over.id;
 
-            if (activeCardId === overCardId) {
+            if (active.id === over.id) {
                 setActiveCard(null);
                 return;
+            }
+
+            const dragOverType = over.data.current?.type;
+
+            if (dragOverType === "Card") {
+                const activeParentId = active.data.current?.card.parentId;
+                const overParentId = over.data.current?.card.parentId;
+                if (activeParentId === overParentId) {
+                    setColumns((columns) => {
+                        const activeCardIndex = columns[activeParentId - 1].cards.findIndex((card) => card.index === active.data.current!.card.index);
+                        const overCardIndex = columns[activeParentId - 1].cards.findIndex((card) => card.index === over.data.current!.card.index);
+                        columns[activeParentId - 1].cards = arrayMove(columns[activeParentId - 1].cards, activeCardIndex, overCardIndex);
+                        columns[overParentId - 1].cards = columns[overParentId - 1].cards.map((card, index) => {
+                            card.index = index + 1
+                            return card;
+                        });
+                        return columns;
+                    });
+                }
+                console.log(columns[2].cards);
+                setData("updateBoard", {columns: JSON.stringify(columns)});
+            }
+
+            if (dragOverType === "Column") {
+                setData("updateBoard", {columns: JSON.stringify(columns)});
             }
 
 
@@ -134,6 +211,7 @@ export default function ToDo() {
             sensors={sensors}
             onDragStart={onDragStart}
             onDragEnd={(e) => onDragEnd(e, setServerData)}
+            onDragOver={(e) => onDragOver(e, setServerData)}
         >
             <div className="board">
                 {drawColumns(columns)}
@@ -257,7 +335,7 @@ const Card = (props: {card: ICard}) => {
 
 const Column = (props: {column: IColumn, setData: Function}) => {
     const {column, setData} = props;
-    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [column])
+    const cardsIdes = useMemo(() => column.cards.map((col) => col.id), [column.cards])
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging} = useSortable({
         id: column.id,

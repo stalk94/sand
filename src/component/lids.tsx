@@ -33,9 +33,9 @@ const Sidebar = (props: {groups}) => {
     const {groups} = props;
 
     const drawGroups = (groups: Array<string>) => {
-        return groups.map((group: string) => {
+        return groups.map((group: string, index: number) => {
             return (
-                <li className="nav__item">
+                <li className="nav__item" key={index}>
                     <button>{group}</button>
                 </li>
             )

@@ -36,7 +36,7 @@ export default function BaseContainer() {
         });
     }
     useDidMount(()=> {
-        setView(<Lids/>);
+        setView(<ToDo/>);
         document.querySelector(".p-menubar-root-list").addEventListener("click", (ev)=> {
             let target = ev.target.textContent;
             if(target==='Контакты') setView(<ContactData useViev={setView}/>);

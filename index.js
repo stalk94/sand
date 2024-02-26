@@ -130,33 +130,13 @@ app.post('/delContact', async(req, res)=> {
     }
 });
 
-app.post('/swapColumns', async(req, res)=> {
+
+app.post('/getTodo', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error && prod!=="false") res.send(verifu);
     else {
         const user = await db.get("users."+req.body.login);
-        if(req.body.first && req.body.second){
-            user.todo.column[req.body.first - 1].id = req.body.second;
-            user.todo.column[req.body.second - 1].id = req.body.first;
-            [user.todo.column[req.body.first - 1], user.todo.column[req.body.second - 1]] = [user.todo.column[req.body.second - 1], user.todo.column[req.body.first - 1]]
-            db.set("users."+req.body.login, user);
-        }
-        res.send(user.todo);
-    }
-});
-app.post('/addColumn', async(req, res)=> {
-    const verifu = await authVerifuToken(req.body.login, req.body.token);
-    
-    if(verifu.error && prod!=="false") res.send(verifu);
-    else {
-        const user = await db.get("users."+req.body.login);
-        if(req.body.column){
-            req.body.column.id = user.todo.column.length + 1;
-            req.body.column.cards = [];
-            user.todo.column.push(req.body.column);
-            db.set("users."+req.body.login, user);
-        }
         res.send(user.todo);
     }
 });
@@ -173,20 +153,16 @@ app.post('/readTodo', async(req, res)=> {
         res.send(user.todo);
     }
 });
-app.post('/addCard', async(req, res)=> {
+app.post('/addColumn', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error && prod!=="false") res.send(verifu);
     else {
         const user = await db.get("users."+req.body.login);
-        if(req.body.card){
-            user.todo.column.map((column, index)=> {
-                if(column.id===req.body.card.parentId){
-                    req.body.card.id = new Date().getTime();
-                    req.body.card.index = user.todo.column[index].cards.length + 1;
-                    column.cards.push(req.body.card);
-                }
-            });
+        if(req.body.column){
+            req.body.column.id = user.todo.column.length + 1;
+            req.body.column.cards = [];
+            user.todo.column.push(req.body.column);
             db.set("users."+req.body.login, user);
         }
         res.send(user.todo);
@@ -212,6 +188,40 @@ app.post('/delColumn', async(req, res)=> {
         res.send(user.todo);
     }
 });
+app.post('/swapColumns', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = await db.get("users."+req.body.login);
+        if(req.body.first && req.body.second){
+            user.todo.column[req.body.first - 1].id = req.body.second;
+            user.todo.column[req.body.second - 1].id = req.body.first;
+            [user.todo.column[req.body.first - 1], user.todo.column[req.body.second - 1]] = [user.todo.column[req.body.second - 1], user.todo.column[req.body.first - 1]]
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
+    }
+});
+app.post('/addCard', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = await db.get("users."+req.body.login);
+        if(req.body.card){
+            user.todo.column.map((column, index)=> {
+                if(column.id===req.body.card.parentId){
+                    req.body.card.id = new Date().getTime();
+                    req.body.card.index = user.todo.column[index].cards.length + 1;
+                    column.cards.push(req.body.card);
+                }
+            });
+            db.set("users."+req.body.login, user);
+        }
+        res.send(user.todo);
+    }
+});
 app.post('/delCard', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
     
@@ -226,10 +236,28 @@ app.post('/delCard', async(req, res)=> {
                             user.todo.column[index].cards.splice(indexCard, 1);
                         }
                     })
+                    column.cards.forEach((card, indexCard) => {
+                        card.index = indexCard;
+                    })
                 }
             });
             db.set("users."+req.body.login, user);
         }
+        res.send(user.todo);
+    }
+});
+app.post('/updateBoard', async(req, res)=> {
+    const verifu = await authVerifuToken(req.body.login, req.body.token);
+    
+    if(verifu.error && prod!=="false") res.send(verifu);
+    else {
+        const user = await db.get("users."+req.body.login);
+
+        if (req.body.columns) {
+            user.todo.column = JSON.parse(req.body.columns);
+            db.set("users."+req.body.login, user);
+        }
+        
         res.send(user.todo);
     }
 });
