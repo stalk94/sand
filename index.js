@@ -129,27 +129,12 @@ app.post('/delContact', async(req, res)=> {
         res.send(cont);
     }
 });
-
-
 app.post('/getTodo', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
     
     if(verifu.error && prod!=="false") res.send(verifu);
     else {
         const user = await db.get("users."+req.body.login);
-        res.send(user.todo);
-    }
-});
-app.post('/readTodo', async(req, res)=> {
-    const verifu = await authVerifuToken(req.body.login, req.body.token);
-    
-    if(verifu.error && prod!=="false") res.send(verifu);
-    else {
-        const user = await db.get("users."+req.body.login);
-        if(req.body.todo){
-            user.todo = req.body.todo;
-            db.set("users."+req.body.login, user);
-        }
         res.send(user.todo);
     }
 });
@@ -160,7 +145,8 @@ app.post('/addColumn', async(req, res)=> {
     else {
         const user = await db.get("users."+req.body.login);
         if(req.body.column){
-            req.body.column.id = user.todo.column.length + 1;
+            req.body.column.id = new Date().getTime();
+            req.body.column.index = user.todo.column.length;
             req.body.column.cards = [];
             user.todo.column.push(req.body.column);
             db.set("users."+req.body.login, user);
@@ -188,21 +174,6 @@ app.post('/delColumn', async(req, res)=> {
         res.send(user.todo);
     }
 });
-app.post('/swapColumns', async(req, res)=> {
-    const verifu = await authVerifuToken(req.body.login, req.body.token);
-    
-    if(verifu.error && prod!=="false") res.send(verifu);
-    else {
-        const user = await db.get("users."+req.body.login);
-        if(req.body.first && req.body.second){
-            user.todo.column[req.body.first - 1].id = req.body.second;
-            user.todo.column[req.body.second - 1].id = req.body.first;
-            [user.todo.column[req.body.first - 1], user.todo.column[req.body.second - 1]] = [user.todo.column[req.body.second - 1], user.todo.column[req.body.first - 1]]
-            db.set("users."+req.body.login, user);
-        }
-        res.send(user.todo);
-    }
-});
 app.post('/addCard', async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
     
@@ -211,9 +182,9 @@ app.post('/addCard', async(req, res)=> {
         const user = await db.get("users."+req.body.login);
         if(req.body.card){
             user.todo.column.map((column, index)=> {
-                if(column.id===req.body.card.parentId){
+                if(column.index===req.body.card.parentIndex){
                     req.body.card.id = new Date().getTime();
-                    req.body.card.index = user.todo.column[index].cards.length + 1;
+                    req.body.card.index = user.todo.column[index].cards.length;
                     column.cards.push(req.body.card);
                 }
             });
@@ -261,8 +232,6 @@ app.post('/updateBoard', async(req, res)=> {
         res.send(user.todo);
     }
 });
-
-
 app.post("/getCalendar", async(req, res)=> {
     const verifu = await authVerifuToken(req.body.login, req.body.token);
 

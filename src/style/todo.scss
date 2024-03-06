@@ -98,3 +98,33 @@
         
     }
 }
+
+.background {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    &.hidden {
+        display: none;
+    }
+
+    .modal-window {
+        height: 70vh;
+        width: 35vw;
+        background-color:rgb(99, 99, 99);
+        padding: 15px 30px;
+        position: relative;
+
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+    }
+}

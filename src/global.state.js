@@ -29,7 +29,8 @@ const globalState = hookstate({
                     content: {}
                 }]
             }]
-        }
+        },
+        modalVisibility: false,
     },
     contacts: [
         {
